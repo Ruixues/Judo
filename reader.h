@@ -5,8 +5,9 @@
 #pragma
 #include <set>
 #include <string>
-#include <sstream>
+#include <fstream>
 #include <memory>
+#include "type.h"
 static std::set<std::string> Keywords = {
     "func",
     "return",
@@ -24,55 +25,80 @@ enum Token
     token_extern = 5,
     token_if = 6,
     token_else = 7,
+    token_eof = 8,
+    token_double = 9,
+    token_int = 10,
+};
+class RToken
+{
+public:
+    Token type;
+    std::unique_ptr<void *> data; //真正的数据
+    RToken(Token type, std::unique_ptr<void *> data) : type(type), data(std::move(data)) {}
 };
 class RxReader
 {
 private:
-    std::unique_ptr<std::istringstream> instream;
+    std::unique_ptr<std::wifstream> winstream;
     std::string str; //获取的str
     wchar_t lastChar = ' ';
+
 public:
-    RxReader(std::unique_ptr<std::istringstream> instream) : instream(std::move(instream)) {}
-    Token ReadAToken();
+    RxReader(std::unique_ptr<std::wifstream> instream) : winstream(std::move(instream)) {}
+    std::unique_ptr<RToken> ReadAToken(std::wifstream fstream);
     std::string GetStr();
 };
-
-Token RxReader::ReadAToken()
+bool isspace(wchar_t cr);
+std::unique_ptr<RToken> RxReader::ReadAToken(std::wifstream fstream)
 {
     str = "";
     // 跳跃空格
     while (isspace(lastChar))
-        (*instream) >> lastChar;
-    if (isalpha(LastChar)) //判断是否是英文字母
+        fstream >> lastChar;
+    if (isalpha(lastChar)) //判断是否是英文字母
     {                      // identifier: [a-zA-Z][a-zA-Z0-9]*
-        str = LastChar;
-        while (isalnum((LastChar = rgetchar())))
-            IdentifierStr += LastChar;
-        if (IdentifierStr == "func") //定义函数
-            return tok_func;
-        if (IdentifierStr == "extern") //外部函数
-            return tok_extern;
-        return tok_identifier;
+        str = lastChar;
+        fstream >> lastChar;
+        while (iswalnum(lastChar))
+            str += lastChar;
+        if (str == "func") //定义函数
+            return std::make_unique<RToken>(token_func, nullptr);
+        if (str == "extern") //外部函数
+            return std::make_unique<RToken>(token_extern, nullptr);
+        return std::make_unique<RToken>(token_str, std::move(str));
     }
-    if (isdigit(LastChar) || LastChar == '.') //如果是数字
-    {                                         // Number: [0-9.]+
+    /*
+        TODO : 实现输入字符串
+    */
+    if (lastChar == '\"')
+    { //是字符串
+    }
+    if (iswdigit(lastChar) || lastChar == '.') //如果是数字
+    {                                          // Number: [0-9.]+
         std::string NumStr;
+        bool tdouble = false;
         do
         {
-            NumStr += LastChar;
-            LastChar = rgetchar();
-        } while (isdigit(LastChar) || LastChar == '.');
-        NumVal = strtod(NumStr.c_str(), 0);
-        return tok_number;
+            if (lastChar == '.')
+            {
+                tdouble = true;
+            }
+            NumStr += lastChar;
+            fstream >> lastChar;
+        } while (iswdigit(lastChar) || lastChar == '.');
+        if (tdouble)
+        {
+            return std::make_unique<RToken>(token_double, std::make_unique<double>(atof(NumStr.c_str())));
+        }
+        return std::make_unique<RToken>(token_int, std::make_unique<int64>(atoll(NumStr.c_str())));
     }
-    if (LastChar == EOF)
-        return tok_eof;
-
-    // Otherwise, just return the character as its ascii value.
-    int ThisChar = LastChar;
-    LastChar = rgetchar();
-    return ThisChar;
+    if (lastChar == EOF)
+        return std::make_unique<RToken>(token_eof, nullptr);
+    auto nowChar = lastChar;
+    fstream >> lastChar;
+    return nullptr;
 }
-bool isspace (wchar_t cr) {
+bool isspace(wchar_t cr)
+{
     return cr == ' ';
 }
