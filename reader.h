@@ -39,26 +39,28 @@ public:
 class RxReader
 {
 private:
-    std::unique_ptr<std::wifstream> winstream;
+    std::wifstream* fstream;
     std::string str; //获取的str
     wchar_t lastChar = ' ';
 
 public:
-    RxReader(std::unique_ptr<std::wifstream> instream) : winstream(std::move(instream)) {}
-    std::unique_ptr<RToken> ReadAToken(std::wifstream fstream);
+    RxReader(std::wifstream* instream) {
+        fstream = instream;
+    }
+    std::unique_ptr<RToken> ReadAToken();
     std::string GetStr();
 };
 bool isspace(wchar_t cr);
-std::unique_ptr<RToken> RxReader::ReadAToken(std::wifstream fstream)
+std::unique_ptr<RToken> RxReader::ReadAToken()
 {
     str = "";
     // 跳跃空格
     while (isspace(lastChar))
-        fstream >> lastChar;
+        *fstream >> lastChar;
     if (isalpha(lastChar)) //判断是否是英文字母
     {                      // identifier: [a-zA-Z][a-zA-Z0-9]*
         str = lastChar;
-        fstream >> lastChar;
+        *fstream >> lastChar;
         while (iswalnum(lastChar))
             str += lastChar;
         if (str == "func") //定义函数
@@ -84,7 +86,7 @@ std::unique_ptr<RToken> RxReader::ReadAToken(std::wifstream fstream)
                 tdouble = true;
             }
             NumStr += lastChar;
-            fstream >> lastChar;
+            *fstream >> lastChar;
         } while (iswdigit(lastChar) || lastChar == '.');
         if (tdouble)
         {
@@ -95,7 +97,7 @@ std::unique_ptr<RToken> RxReader::ReadAToken(std::wifstream fstream)
     if (lastChar == EOF)
         return std::make_unique<RToken>(token_eof, nullptr);
     auto nowChar = lastChar;
-    fstream >> lastChar;
+    *fstream >> lastChar;
     return nullptr;
 }
 bool isspace(wchar_t cr)
