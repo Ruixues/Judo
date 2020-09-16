@@ -4,21 +4,26 @@
 #include <memory>
 #include "../type.h"
 #include "AST.h"
-// 函数参数
+
 namespace AST
 {
+    // 函数参数
     class FunctionArg
     {
-        JotoType type;
+    public:
+        JudoType type;
         std::string name;
+        FunctionArg (JudoType type,std::string name): type (type),name (name) {}
     };
     class FunctionProto
     {
     private:
+        std::string name;
         std::unique_ptr<std::vector<FunctionArg>> args;
-
+        std::string returnName; //返回变量的名字
+        JudoType returnType;
     public:
-        FunctionProto(std::unique_ptr<std::vector<FunctionArg>> args) : args(std::move(args))
+        FunctionProto(std::string name,std::unique_ptr<std::vector<FunctionArg>> args,std::string returnName,JudoType returnType) : name (name),args(std::move(args)), returnName(returnName),returnType(returnType)
         {
         }
     };

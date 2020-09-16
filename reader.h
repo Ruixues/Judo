@@ -2,7 +2,7 @@
  * 本文件用来进行token的读取
  * 
  **/
-#pragma
+#pragma once
 #include <set>
 #include <string>
 #include <fstream>
@@ -28,6 +28,7 @@ enum Token
     token_eof = 8,
     token_double = 9,
     token_int = 10,
+    token_sign = 11,
 };
 class RToken
 {
@@ -42,18 +43,16 @@ private:
     std::wifstream* fstream;
     std::string str; //获取的str
     wchar_t lastChar = ' ';
-
 public:
     RxReader(std::wifstream* instream) {
         fstream = instream;
     }
-    std::unique_ptr<RToken> ReadAToken();
-    std::string GetStr();
+    std::shared_ptr<RToken> ReadAToken();
 };
 bool isspace(wchar_t cr);
-std::unique_ptr<RToken> RxReader::ReadAToken()
+std::shared_ptr<RToken> RxReader::ReadAToken()
 {
-    str = "";
+    std::string str;
     // 跳跃空格
     while (isspace(lastChar))
         *fstream >> lastChar;
@@ -64,10 +63,10 @@ std::unique_ptr<RToken> RxReader::ReadAToken()
         while (iswalnum(lastChar))
             str += lastChar;
         if (str == "func") //定义函数
-            return std::make_unique<RToken>(token_func, nullptr);
+            return std::make_shared<RToken>(token_func, nullptr);
         if (str == "extern") //外部函数
-            return std::make_unique<RToken>(token_extern, nullptr);
-        return std::make_unique<RToken>(token_str, std::move(str));
+            return std::make_shared<RToken>(token_extern, nullptr);
+        return std::make_shared<RToken>(token_str, std::make_unique<std::string>(str));
     }
     /*
         TODO : 实现输入字符串
@@ -90,15 +89,19 @@ std::unique_ptr<RToken> RxReader::ReadAToken()
         } while (iswdigit(lastChar) || lastChar == '.');
         if (tdouble)
         {
-            return std::make_unique<RToken>(token_double, std::make_unique<double>(atof(NumStr.c_str())));
+            return std::make_shared<RToken>(token_double, std::make_unique<double*>(new double(atof(NumStr.c_str()))));
         }
-        return std::make_unique<RToken>(token_int, std::make_unique<int64>(atoll(NumStr.c_str())));
+        return std::make_shared<RToken>(token_int, std::make_unique<int64*>(new int64(atoll(NumStr.c_str()))));
     }
     if (lastChar == EOF)
-        return std::make_unique<RToken>(token_eof, nullptr);
-    auto nowChar = lastChar;
-    *fstream >> lastChar;
-    return nullptr;
+        return std::make_shared<RToken>(token_eof, nullptr);
+    // 说明啥都不是，那就连续读，一直到EOF或者空格
+    std::string ret;
+    while (lastChar != EOF && lastChar != ' ' && !iswdigit(lastChar)) {
+        ret += lastChar;
+        *fstream >> lastChar;
+    }
+    return std::make_shared<RToken>(token_sign,std::make_unique<std::string*>(&ret));
 }
 bool isspace(wchar_t cr)
 {

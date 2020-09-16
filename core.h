@@ -4,18 +4,22 @@
 #include <string>
 #include <memory>
 #include "reader.h"
+#include "parser/parser.h"
+#include "loger.h"
 //每个文件都是一个module.
 class Module
 {
 private:
-    std::ifstream file;
+    std::wifstream file;
     std::unique_ptr<RxReader> reader;
-
 public:
+    std::unique_ptr<Log> loger;
+    std::shared_ptr<RToken> nowToken;
     Module(std::string file)
     {
         this->file.open(file, std::ios::in);
-        reader = std::make_unique<RxReader>(this->file);
+        reader = std::make_unique<RxReader>(&(this->file));
+        loger = std::make_unique<Log>();
     }
     void Parse()
     {
@@ -23,18 +27,21 @@ public:
         auto token = reader->ReadAToken();
         while (1)
         {
-            switch (token->type)
-            {
-            case token_eof:
+            if (token->type == token_eof)
             {
                 break;
             }
+            switch (token->type)
+            {
+            case token_func:
+                Parser::ParseFunction(this);
             }
         }
     }
-    std::unique_ptr<RToken> ReadAToken()
+    std::shared_ptr<RToken> ReadAToken()
     {
-        return reader->ReadAToken();
+        nowToken = reader->ReadAToken();
+        return nowToken;
     }
 };
 class Judo
