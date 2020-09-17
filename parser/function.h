@@ -37,7 +37,7 @@ namespace Parser
         token = module->ReadAToken();
         if (token->type != token_sign || *(std::string*)(*(token->data)) != "(") {  //无返回值
             //返回值是null
-            return std::make_unique<AST::FunctionProto>(FunctionName,args,std::string(""),JudoType(Type_void));
+            return std::make_unique<AST::FunctionProto>(FunctionName,std::move(args),std::string(""),JudoType(Type_void));
         }
         token = module->ReadAToken();
         auto token2 = module->ReadAToken();
@@ -48,15 +48,23 @@ namespace Parser
             if (*(std::string*)(*(token2->data)) != ")") {
                 return module->loger->FunctionProtoParseError("There must be a ) after the Type of Return");
             }
-            return std::make_unique<AST::FunctionProto>(FunctionName,args,"",JudoType(*(std::string*)(*(token2->data))));
+            return std::make_unique<AST::FunctionProto>(FunctionName,std::move(args),"",JudoType(*(std::string*)(*(token2->data))));
         }
-        return std::make_unique<AST::FunctionProto>(FunctionName,args,*(std::string*)(*(token->data)),JudoType(*(std::string*)(*(token2->data))));
+        return std::make_unique<AST::FunctionProto>(FunctionName,std::move(args),*(std::string*)(*(token->data)),JudoType(*(std::string*)(*(token2->data))));
     }
     std::unique_ptr<AST::FunctionAST> ParseFunction(Module *module)
     {
         auto token = module->ReadAToken();  //吃掉 func 标识符
         //开始解析函数的定义
         auto proto = ParseFunctionProto (module);
-        
+        //开始解析函数内部
+
+    }
+    static std::unique_ptr<AST::ExprAST> ParseExpression()
+    {
+        auto LHS = ParsePrimary();
+        if (!LHS)
+            return nullptr;
+        return ParseBinOpRHS(0, std::move(LHS));
     }
 }; // namespace Parser
