@@ -3,19 +3,22 @@
 #include <iostream>
 #include <memory>
 #include "ast/function.h"
+#include "ast/AST.h"
+#include <string>
 class Log {
 private:
     std::ostream* ostream;
 public:
     Log (std::ostream* ostream = nullptr) {
         if (ostream == nullptr) {
-            this->ostream = std::cout;
+            this->ostream = &std::cout;
         }
     }
-    void ParseError (string ParseModule,string data) {
-
+    std::unique_ptr<AST::ExprAST> ParseError (std::string ParseModule,std::string data) {
+        *ostream << ParseModule << " " << data;
+        return nullptr;
     }
-    std::unique_ptr<AST::FunctionProto> FunctionProtoParseError (string data) {
+    std::unique_ptr<AST::FunctionProto> FunctionProtoParseError (std::string data) {
         *ostream << data;
         return nullptr;
     }
