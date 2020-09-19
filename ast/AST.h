@@ -1,5 +1,5 @@
 #pragma once
-#include "llvmInclude.h"
+//#include "../llvmInclude.h"
 #include <memory>
 #include <vector>
 namespace AST
@@ -9,6 +9,6 @@ namespace AST
     private:
     public:
         virtual ~ExprAST();
-        virtual llvm::Value *genCode(); //生成LLVM IR
+        //virtual llvm::Value *genCode(); //生成LLVM IR
     };
 } // namespace AST

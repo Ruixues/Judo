@@ -2,6 +2,8 @@
 #include "thirdparty/argparse/argparse.hpp"
 #include <string_view>
 #include "config.h"
+#include "core.h"
+void RunJudoProgram (std::string in);
 void HandleInput (int argc, char *argv[]) {
     argparse::ArgumentParser program("Judo",JudoVersion);
     program.add_argument("-version")
@@ -25,6 +27,10 @@ void HandleInput (int argc, char *argv[]) {
     }
     std::string input = program.get<std::string>("-i");
     if (input != "") {
-        std::cout << "Input File:" << input << std::endl;
+        //开始加载
+        RunJudoProgram(input);
     }
+}
+void RunJudoProgram (std::string in) {
+    auto module = new Judo (in);
 }
