@@ -5,6 +5,7 @@
 #include "../ast/function.h"
 #include "../ast/binaryOpt.h"
 #include "../ast/variable.h"
+#include "../ast/FunctionCall.h"
 #include <memory>
 #include <vector>
 #include "../loger.h"
@@ -126,9 +127,16 @@ namespace Parser {
                     Args.push_back(std::move(Arg));
                 else
                     return nullptr;
-
+                if (module->nowToken->type == token_sign && module->nowToken->GetSign() == ")") {
+                    break ;
+                }
+                if (module->nowToken->type != token_sign || module->nowToken->GetSign() != ",") {
+                    return module->loger->ParseError("Function Call","Expected ')' or ',' in argument list");
+                }
             }
         }
+        module->ReadAToken();   //吃掉)
+        return std::make_unique<AST::FunctionCall>(strName,Args);
     }
     static std::unique_ptr<AST::ExprAST> ParsePrimary(Module *module) {
         auto token = module->nowToken;
