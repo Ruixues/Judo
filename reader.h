@@ -32,7 +32,7 @@ enum Token
     token_sign = 11,
 };
 static bool isMustSingle (std::string str) {
-    static std::set<std::string> t = {"{","}","(",")"};
+    static std::set<std::string> t = {"{","}","(",")","+","-","*","/","%"};
     return t.find(str) != t.end();
 }
 class RToken
@@ -41,6 +41,7 @@ public:
     Token type;
     std::unique_ptr<void *> data; //真正的数据
     std::string GetSign ();
+    std::string GetStr ();
     RToken(Token type, std::unique_ptr<void *> data) : type(type), data(std::move(data)) {}
 };
 class RxReader

@@ -58,3 +58,6 @@ std::shared_ptr<RToken> RxReader::ReadAToken()
 std::string RToken::GetSign () {
     return *(std::string*)(*(this->data));
 }
+std::string RToken::GetStr () {
+    return *(std::string*)(*(this->data));
+}

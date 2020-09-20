@@ -3,6 +3,8 @@
 #include "../type.h"
 #include "../reader.h"
 #include "../ast/function.h"
+#include "../ast/binaryOpt.h"
+#include "../ast/variable.h"
 #include <memory>
 #include <vector>
 #include "../loger.h"
@@ -56,9 +58,77 @@ namespace Parser {
         return std::make_unique<AST::FunctionProto>(FunctionName, std::move(args), *(std::string *) (*(token->data)),
                                                     JudoType(*(std::string *) (*(token2->data))));
     }
+    static int GetTokPrecedence(Module *module)
+    {
+        if (module->nowToken->type != token_str)
+            return -1;
+        //确定是一个存在的运算符
+        if (AST::BinopPrecedence.find(module->nowToken->GetSign()) == AST::BinopPrecedence.end())
+        {
+            return -1; //不存在就返回-1
+        }
+        int TokPrec = AST::BinopPrecedence [module->nowToken->GetSign()];
+        if (TokPrec <= 0)
+            return -1;
+        return TokPrec;
+    }
+    static std::unique_ptr<AST::ExprAST> ParseBinOpRHS(Module *module,int ExprPrec, std::unique_ptr<AST::ExprAST> LHS)
+    {
+        while (1)
+        {
+            int TokPrec = GetTokPrecedence(module);
+            if (TokPrec < ExprPrec) //如果比上一个运算符小的话,比如1*2+3 则+3不能计算进去，就直接返回
+                return LHS;
+            // 已经确定了可以计算
+            std::string BinOp = module->nowToken->GetSign();
+            module->ReadAToken();
+            // 获取操作符的右边第一个
+            auto RHS = ParsePrimary(module);
+            if (!RHS)
+                return nullptr;
+            int NextPrec = GetTokPrecedence(module); //获取右边的下一个运算符
+            if (TokPrec < NextPrec)            //下下一个比自己和下一个的优先级大 所以就要先下一个，不能先自己.否则就直接自己和下一个结合
+            {
+                RHS = ParseBinOpRHS(module,TokPrec + 1, std::move(RHS)); //不能和自己与下一个大小相同
+                if (!RHS)
+                    return nullptr;
+            }
+            LHS = std::make_unique<AST::BinaryExprAST>(BinOp, std::move(LHS),
+                                                  std::move(RHS));
+        }
+    }
+    static std::unique_ptr<AST::ExprAST> ParseExpression(Module *module) {
+        auto LHS = ParsePrimary(module);
+        if (!LHS)
+            return nullptr;
+        return ParseBinOpRHS(module, 0, std::move(LHS));
+    }
     static std::unique_ptr<AST::ExprAST> ParseParenExpr(Module *module) {
         auto token = module->ReadAToken();
-        
+        ParseExpression(module);
+    }
+    static std::unique_ptr<AST::ExprAST> ParseIdentifierExpr (Module *module) {
+        //判断是函数调用还是啥
+        std::string strName = module->nowToken->GetStr();
+        auto next = module->ReadAToken();
+        if (next->type != token_str || next->GetStr() != "(") {
+            //就是变量
+            return std::make_unique<AST::VariableExpr>(strName);
+        }
+        //否则就是函数调用
+        module->ReadAToken();   //吃掉(
+        //开始处理参数
+        std::vector<std::unique_ptr<AST::ExprAST>> Args;
+        if (module->nowToken->type != token_sign || module->nowToken->GetSign() != ")") {
+            //那就是有参数
+            while (1) {
+                if (auto Arg = Parser::ParseExpression(module))
+                    Args.push_back(std::move(Arg));
+                else
+                    return nullptr;
+
+            }
+        }
     }
     static std::unique_ptr<AST::ExprAST> ParsePrimary(Module *module) {
         auto token = module->nowToken;
@@ -66,7 +136,7 @@ namespace Parser {
             default:
                 return module->loger->ParseError("function","未知的标记类型");
             case token_str:
-                    return ParseIdentifierExpr();   //可能是变量，也可能是函数调用
+                    return ParseIdentifierExpr(module);   //可能是变量，也可能是函数调用
             case token_int:
 //                return ParseNumberExpr();
             case token_sign: //括号开始
@@ -82,11 +152,5 @@ namespace Parser {
         //开始解析函数的定义
         auto proto = ParseFunctionProto(module);
         //开始解析函数内部
-    }
-    static std::unique_ptr<AST::ExprAST> ParseExpression(Module *module) {
-        auto LHS = ParsePrimary(module);
-        if (!LHS)
-            return nullptr;
-        return ParseBinOpRHS(0, std::move(LHS));
     }
 }
