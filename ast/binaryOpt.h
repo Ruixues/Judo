@@ -7,9 +7,10 @@
 
 namespace AST {
     std::map<std::string, int> BinopPrecedence = {{"<", 10},
-                                                        {"+", 20},
-                                                        {"-", 30},
-                                                        {"*", 40}};
+                                                  {"+", 20},
+                                                  {"-", 30},
+                                                  {"*", 40}};
+
     class BinaryExprAST : public ExprAST {
         std::string opt;
         std::unique_ptr<ExprAST> l, r;

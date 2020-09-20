@@ -2,10 +2,9 @@
 //#include "../llvmInclude.h"
 #include <memory>
 #include <vector>
-namespace AST
-{
-    class ExprAST
-    {
+
+namespace AST {
+    class ExprAST {
     private:
     public:
         //virtual ~ExprAST();

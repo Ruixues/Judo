@@ -7,7 +7,7 @@
 #include <vector>
 
 namespace Parser {
-     std::unique_ptr<AST::FunctionProto> ParseFunctionProto(Module *module) {
+    std::unique_ptr<AST::FunctionProto> ParseFunctionProto(Module *module) {
         if (module->nowToken->type != token_str) {
             return module->loger->FunctionProtoParseError("There must be the name of function after 'func'");
         }
@@ -57,7 +57,7 @@ namespace Parser {
                                                     JudoType(*(std::string *) (*(token2->data))));
     }
 
-     int GetTokPrecedence(Module *module) {
+    int GetTokPrecedence(Module *module) {
         if (module->nowToken->type != token_str)
             return -1;
         //确定是一个存在的运算符
@@ -70,7 +70,7 @@ namespace Parser {
         return TokPrec;
     }
 
-     std::unique_ptr<AST::ExprAST>
+    std::unique_ptr<AST::ExprAST>
     ParseBinOpRHS(Module *module, int ExprPrec, std::unique_ptr<AST::ExprAST> LHS) {
         while (1) {
             int TokPrec = GetTokPrecedence(module);
@@ -95,14 +95,14 @@ namespace Parser {
         }
     }
 
-     std::unique_ptr<AST::ExprAST> ParseExpression(Module *module) {
+    std::unique_ptr<AST::ExprAST> ParseExpression(Module *module) {
         auto LHS = ParsePrimary(module);
         if (!LHS)
             return nullptr;
         return ParseBinOpRHS(module, 0, std::move(LHS));
     }
 
-     std::unique_ptr<AST::ExprAST> ParseIdentifierExpr(Module *module) {
+    std::unique_ptr<AST::ExprAST> ParseIdentifierExpr(Module *module) {
         //判断是函数调用还是啥
         std::string strName = module->nowToken->GetStr();
         auto next = module->ReadAToken();
@@ -133,7 +133,7 @@ namespace Parser {
         return std::make_unique<AST::FunctionCall>(strName, std::move(Args));
     }
 
-     std::unique_ptr<AST::ExprAST> ParsePrimary(Module *module) {
+    std::unique_ptr<AST::ExprAST> ParsePrimary(Module *module) {
         auto token = module->nowToken;
         switch (token->type) {
             default:
@@ -142,8 +142,7 @@ namespace Parser {
                 return ParseIdentifierExpr(module);   //可能是变量，也可能是函数调用
             case token_int:
 //                return ParseNumberExpr();
-            case token_sign:
-            {
+            case token_sign: {
                 if (token->GetSign() == "(") { //括号开始
                     return ParseParenExpr(module);
                 }
@@ -158,6 +157,7 @@ namespace Parser {
         auto proto = ParseFunctionProto(module);
         if (!proto)
             return nullptr;
+        std::cout << "Here Got" << std::endl;
         //开始解析函数内部
         auto inside = ParseExpression(module);
         if (!inside)

@@ -28,6 +28,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE  OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 #pragma once
+
 #include <algorithm>
 #include <any>
 #include <cerrno>
@@ -53,14 +54,19 @@ namespace argparse {
 
     namespace details { // namespace for helper methods
 
-        template <typename... Ts> struct is_container_helper {};
+        template<typename... Ts>
+        struct is_container_helper {
+        };
 
-        template <typename T, typename _ = void>
-        struct is_container : std::false_type {};
+        template<typename T, typename _ = void>
+        struct is_container : std::false_type {
+        };
 
-        template <> struct is_container<std::string> : std::false_type {};
+        template<>
+        struct is_container<std::string> : std::false_type {
+        };
 
-        template <typename T>
+        template<typename T>
         struct is_container<
                 T,
                 std::conditional_t<false,
@@ -68,42 +74,43 @@ namespace argparse {
                                 decltype(std::declval<T>().begin()),
                                 decltype(std::declval<T>().end()),
                                 decltype(std::declval<T>().size())>,
-                        void>> : std::true_type {};
+                        void>> : std::true_type {
+        };
 
-        template <typename T>
+        template<typename T>
         static constexpr bool is_container_v = is_container<T>::value;
 
         namespace {
 
-            template <typename T> constexpr bool standard_signed_integer = false;
-            template <> constexpr bool standard_signed_integer<signed char> = true;
-            template <> constexpr bool standard_signed_integer<short int> = true;
-            template <> constexpr bool standard_signed_integer<int> = true;
-            template <> constexpr bool standard_signed_integer<long int> = true;
-            template <> constexpr bool standard_signed_integer<long long int> = true;
+            template<typename T> constexpr bool standard_signed_integer = false;
+            template<> constexpr bool standard_signed_integer<signed char> = true;
+            template<> constexpr bool standard_signed_integer<short int> = true;
+            template<> constexpr bool standard_signed_integer<int> = true;
+            template<> constexpr bool standard_signed_integer<long int> = true;
+            template<> constexpr bool standard_signed_integer<long long int> = true;
 
-            template <typename T> constexpr bool standard_unsigned_integer = false;
-            template <> constexpr bool standard_unsigned_integer<unsigned char> = true;
-            template <> constexpr bool standard_unsigned_integer<unsigned short int> = true;
-            template <> constexpr bool standard_unsigned_integer<unsigned int> = true;
-            template <> constexpr bool standard_unsigned_integer<unsigned long int> = true;
-            template <>
+            template<typename T> constexpr bool standard_unsigned_integer = false;
+            template<> constexpr bool standard_unsigned_integer<unsigned char> = true;
+            template<> constexpr bool standard_unsigned_integer<unsigned short int> = true;
+            template<> constexpr bool standard_unsigned_integer<unsigned int> = true;
+            template<> constexpr bool standard_unsigned_integer<unsigned long int> = true;
+            template<>
             constexpr bool standard_unsigned_integer<unsigned long long int> = true;
 
         }
 
-        template <typename T>
+        template<typename T>
         constexpr bool standard_integer =
                 standard_signed_integer<T> || standard_unsigned_integer<T>;
 
-        template <class F, class Tuple, class Extra, size_t... I>
+        template<class F, class Tuple, class Extra, size_t... I>
         constexpr decltype(auto) apply_plus_one_impl(F &&f, Tuple &&t, Extra &&x,
                                                      std::index_sequence<I...>) {
             return std::invoke(std::forward<F>(f), std::get<I>(std::forward<Tuple>(t))...,
                                std::forward<Extra>(x));
         }
 
-        template <class F, class Tuple, class Extra>
+        template<class F, class Tuple, class Extra>
         constexpr decltype(auto) apply_plus_one(F &&f, Tuple &&t, Extra &&x) {
             return details::apply_plus_one_impl(
                     std::forward<F>(f), std::forward<Tuple>(t), std::forward<Extra>(x),
@@ -115,7 +122,7 @@ namespace argparse {
             return std::tuple(s.data(), s.data() + s.size());
         }
 
-        template <class CharT, class Traits>
+        template<class CharT, class Traits>
         constexpr bool starts_with(std::basic_string_view<CharT, Traits> prefix,
                                    std::basic_string_view<CharT, Traits> s) noexcept {
             return s.substr(0, prefix.size()) == prefix;
@@ -145,11 +152,11 @@ namespace argparse {
             }
         }
 
-        template <class T, auto Param>
+        template<class T, auto Param>
         inline auto do_from_chars(std::string_view s) -> T {
             T x;
-            auto [first, last] = pointer_range(s);
-            auto [ptr, ec] = std::from_chars(first, last, x, Param);
+            auto[first, last] = pointer_range(s);
+            auto[ptr, ec] = std::from_chars(first, last, x, Param);
             if (ec == std::errc()) {
                 if (ptr == last)
                     return x;
@@ -164,24 +171,27 @@ namespace argparse {
             }
         }
 
-        template <class T, auto Param = 0> struct parse_number {
+        template<class T, auto Param = 0>
+        struct parse_number {
             auto operator()(std::string_view s) -> T {
                 return do_from_chars<T, Param>(s);
             }
         };
 
-        template <class T> struct parse_number<T, 16> {
+        template<class T>
+        struct parse_number<T, 16> {
             auto operator()(std::string_view s) -> T {
-                if (auto [ok, rest] = consume_hex_prefix(s); ok)
+                if (auto[ok, rest] = consume_hex_prefix(s); ok)
                     return do_from_chars<T, 16>(rest);
                 else
                     throw std::invalid_argument{"pattern not found"};
             }
         };
 
-        template <class T> struct parse_number<T> {
+        template<class T>
+        struct parse_number<T> {
             auto operator()(std::string_view s) -> T {
-                if (auto [ok, rest] = consume_hex_prefix(s); ok)
+                if (auto[ok, rest] = consume_hex_prefix(s); ok)
                     return do_from_chars<T, 16>(rest);
                 else if (starts_with("0"sv, s))
                     return do_from_chars<T, 8>(rest);
@@ -192,18 +202,19 @@ namespace argparse {
 
         namespace {
 
-            template <class T> constexpr auto generic_strtod = nullptr;
-            template <> constexpr auto generic_strtod<float> = strtof;
-            template <> constexpr auto generic_strtod<double> = strtod;
-            template <> constexpr auto generic_strtod<long double> = strtold;
+            template<class T> constexpr auto generic_strtod = nullptr;
+            template<> constexpr auto generic_strtod<float> = strtof;
+            template<> constexpr auto generic_strtod<double> = strtod;
+            template<> constexpr auto generic_strtod<long double> = strtold;
 
         }
 
-        template <class T> inline auto do_strtod(std::string const &s) -> T {
+        template<class T>
+        inline auto do_strtod(std::string const &s) -> T {
             if (isspace(static_cast<unsigned char>(s[0])) || s[0] == '+')
                 throw std::invalid_argument{"pattern not found"};
 
-            auto [first, last] = pointer_range(s);
+            auto[first, last] = pointer_range(s);
             char *ptr;
 
             errno = 0;
@@ -219,7 +230,8 @@ namespace argparse {
             }
         }
 
-        template <class T> struct parse_number<T, chars_format::general> {
+        template<class T>
+        struct parse_number<T, chars_format::general> {
             auto operator()(std::string const &s) -> T {
                 if (auto r = consume_hex_prefix(s); r.is_hexadecimal)
                     throw std::invalid_argument{
@@ -229,7 +241,8 @@ namespace argparse {
             }
         };
 
-        template <class T> struct parse_number<T, chars_format::hex> {
+        template<class T>
+        struct parse_number<T, chars_format::hex> {
             auto operator()(std::string const &s) -> T {
                 if (auto r = consume_hex_prefix(s); !r.is_hexadecimal)
                     throw std::invalid_argument{"chars_format::hex parses hexfloat"};
@@ -238,7 +251,8 @@ namespace argparse {
             }
         };
 
-        template <class T> struct parse_number<T, chars_format::scientific> {
+        template<class T>
+        struct parse_number<T, chars_format::scientific> {
             auto operator()(std::string const &s) -> T {
                 if (auto r = consume_hex_prefix(s); r.is_hexadecimal)
                     throw std::invalid_argument{
@@ -251,7 +265,8 @@ namespace argparse {
             }
         };
 
-        template <class T> struct parse_number<T, chars_format::fixed> {
+        template<class T>
+        struct parse_number<T, chars_format::fixed> {
             auto operator()(std::string const &s) -> T {
                 if (auto r = consume_hex_prefix(s); r.is_hexadecimal)
                     throw std::invalid_argument{
@@ -270,14 +285,15 @@ namespace argparse {
 
     class Argument {
         friend class ArgumentParser;
+
         friend auto operator<<(std::ostream &, ArgumentParser const &)
         -> std::ostream &;
 
-        template <size_t N, size_t... I>
+        template<size_t N, size_t... I>
         explicit Argument(std::string_view(&&a)[N], std::index_sequence<I...>)
                 : mIsOptional((is_optional(a[I]) || ...)), mIsRequired(false),
                   mIsUsed(false) {
-            ((void)mNames.emplace_back(a[I]), ...);
+            ((void) mNames.emplace_back(a[I]), ...);
             std::sort(
                     mNames.begin(), mNames.end(), [](const auto &lhs, const auto &rhs) {
                         return lhs.size() == rhs.size() ? lhs < rhs : lhs.size() < rhs.size();
@@ -285,7 +301,7 @@ namespace argparse {
         }
 
     public:
-        template <size_t N>
+        template<size_t N>
         explicit Argument(std::string_view(&&a)[N])
                 : Argument(std::move(a), std::make_index_sequence<N>{}) {}
 
@@ -310,7 +326,7 @@ namespace argparse {
             return *this;
         }
 
-        template <class F, class... Args>
+        template<class F, class... Args>
         auto action(F &&aAction, Args &&... aBound)
         -> std::enable_if_t<std::is_invocable_v<F, Args..., std::string const>,
                 Argument &> {
@@ -329,7 +345,7 @@ namespace argparse {
             return *this;
         }
 
-        template <char Shape, typename T>
+        template<char Shape, typename T>
         auto scan() -> std::enable_if_t<std::is_arithmetic_v<T>, Argument &> {
             static_assert(!(std::is_const_v<T> || std::is_volatile_v<T>),
                           "T should not be cv-qualified");
@@ -380,7 +396,7 @@ namespace argparse {
             return *this;
         }
 
-        template <typename Iterator>
+        template<typename Iterator>
         Iterator consume(Iterator start, Iterator end,
                          std::string_view usedName = {}) {
             if (mIsUsed) {
@@ -489,7 +505,8 @@ namespace argparse {
             return stream;
         }
 
-        template <typename T> bool operator!=(const T &aRhs) const {
+        template<typename T>
+        bool operator!=(const T &aRhs) const {
             return !(*this == aRhs);
         }
 
@@ -497,7 +514,8 @@ namespace argparse {
          * Compare to an argument value of known type
          * @throws std::logic_error in case of incompatible types
          */
-        template <typename T> bool operator==(const T &aRhs) const {
+        template<typename T>
+        bool operator==(const T &aRhs) const {
             if constexpr (!details::is_container_v<T>) {
                 return get<T>() == aRhs;
             } else {
@@ -690,7 +708,8 @@ namespace argparse {
          * Get argument value given a type
          * @throws std::logic_error in case of incompatible types
          */
-        template <typename T> T get() const {
+        template<typename T>
+        T get() const {
             if (!mValues.empty()) {
                 if constexpr (details::is_container_v<T>)
                     return any_cast_container<T>(mValues);
@@ -708,7 +727,8 @@ namespace argparse {
          * @pre The object has no default value.
          * @returns The stored value if any, std::nullopt otherwise.
          */
-        template <typename T> auto present() const -> std::optional<T> {
+        template<typename T>
+        auto present() const -> std::optional<T> {
             if (mDefaultValue.has_value())
                 throw std::logic_error("Argument with default value always presents");
 
@@ -720,7 +740,7 @@ namespace argparse {
                 return std::any_cast<T>(mValues.front());
         }
 
-        template <typename T>
+        template<typename T>
         static auto any_cast_container(const std::vector<std::any> &aOperand) -> T {
             using ValueType = typename T::value_type;
 
@@ -743,9 +763,9 @@ namespace argparse {
                 [](const std::string &aValue) { return aValue; }};
         std::vector<std::any> mValues;
         int mNumArgs = 1;
-        bool mIsOptional : 1;
-        bool mIsRequired : 1;
-        bool mIsUsed : 1; // True if the optional argument is used by user
+        bool mIsOptional: 1;
+        bool mIsRequired: 1;
+        bool mIsUsed: 1; // True if the optional argument is used by user
     };
 
     class ArgumentParser {
@@ -761,6 +781,7 @@ namespace argparse {
         }
 
         ArgumentParser(ArgumentParser &&) noexcept = default;
+
         ArgumentParser &operator=(ArgumentParser &&) = default;
 
         ArgumentParser(const ArgumentParser &other)
@@ -783,7 +804,8 @@ namespace argparse {
 
         // Parameter packing
         // Call add_argument with variadic number of string arguments
-        template <typename... Targs> Argument &add_argument(Targs... Fargs) {
+        template<typename... Targs>
+        Argument &add_argument(Targs... Fargs) {
             using array_of_sv = std::string_view[sizeof...(Targs)];
             auto tArgument = mOptionalArguments.emplace(cend(mOptionalArguments),
                                                         array_of_sv{Fargs...});
@@ -798,7 +820,7 @@ namespace argparse {
 
         // Parameter packed add_parents method
         // Accepts a variadic number of ArgumentParser objects
-        template <typename... Targs>
+        template<typename... Targs>
         ArgumentParser &add_parents(const Targs &... Fargs) {
             for (const ArgumentParser &tParentParser : {std::ref(Fargs)...}) {
                 for (auto &tArgument : tParentParser.mPositionalArguments) {
@@ -850,7 +872,8 @@ namespace argparse {
          * @throws std::logic_error if the option has no value
          * @throws std::bad_any_cast if the option is not of type T
          */
-        template <typename T = std::string> T get(std::string_view aArgumentName) const {
+        template<typename T = std::string>
+        T get(std::string_view aArgumentName) const {
             return (*this)[aArgumentName].get<T>();
         }
 
@@ -859,7 +882,7 @@ namespace argparse {
          * @throws std::logic_error if there is no such option
          * @throws std::bad_any_cast if the option is not of type T
          */
-        template <typename T = std::string>
+        template<typename T = std::string>
         auto present(std::string_view aArgumentName) -> std::optional<T> {
             return (*this)[aArgumentName].present<T>();
         }
@@ -889,7 +912,7 @@ namespace argparse {
                 }
                 stream << "\n\n";
 
-                if(!parser.mDescription.empty())
+                if (!parser.mDescription.empty())
                     stream << parser.mDescription << "\n\n";
 
                 if (!parser.mPositionalArguments.empty())
@@ -909,7 +932,7 @@ namespace argparse {
                     stream << mOptionalArgument;
                 }
 
-                if(!parser.mEpilog.empty())
+                if (!parser.mEpilog.empty())
                     stream << parser.mEpilog << "\n\n";
             }
 
