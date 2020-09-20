@@ -42,7 +42,10 @@ static bool isMustSingle(std::string str) {
 class RToken {
 public:
     Token type;
-    std::unique_ptr<void *> data; //真正的数据
+    std::string strData;
+    int64 int64Data;
+    double doubleData;
+
     std::string GetSign();
 
     std::string GetStr();
@@ -51,7 +54,13 @@ public:
 
     bool IsSign(std::string sign);
 
-    RToken(Token type, std::unique_ptr<void *> data) : type(type), data(std::move(data)) {}
+    RToken(Token type, int64 i64Data) : int64Data(i64Data) {}
+
+    RToken(Token type) : type(type) {}
+
+    RToken(Token type, double doubleData) : type(type), doubleData(doubleData) {}
+
+    RToken(Token type, std::string strData) : type(type), strData(strData) {}
 };
 
 class RxReader {

@@ -2,6 +2,8 @@
 #include <iostream>
 
 std::shared_ptr<RToken> RxReader::ReadAToken() {
+    if (lastChar == WEOF)
+        return std::make_shared<RToken>(token_eof, nullptr);
     std::string str;
     // 跳跃空格
     while (isspace(lastChar)) {
@@ -16,12 +18,11 @@ std::shared_ptr<RToken> RxReader::ReadAToken() {
             *fstream >> lastChar;
         }
         if (str == "func") //定义函数
-            return std::make_shared<RToken>(token_func, nullptr);
+            return std::make_shared<RToken>(token_func);
         if (str == "extern") //外部函数
-            return std::make_shared<RToken>(token_extern, nullptr);
-        return std::make_shared<RToken>(token_str, std::make_unique<void *>(&str));
+            return std::make_shared<RToken>(token_extern);
+        return std::make_shared<RToken>(token_str, str);
     }
-    std::cout << "No" << std::endl;
     /*
         TODO : 实现输入字符串
     */
@@ -39,39 +40,39 @@ std::shared_ptr<RToken> RxReader::ReadAToken() {
             *fstream >> lastChar;
         } while (iswdigit(lastChar) || lastChar == '.');
         if (tdouble) {
-            return std::make_shared<RToken>(token_double, std::make_unique<void *>(new double(atof(NumStr.c_str()))));
+            return std::make_shared<RToken>(token_double, atof(NumStr.c_str()));
         }
-        return std::make_shared<RToken>(token_int, std::make_unique<void *>(new int64(atoll(NumStr.c_str()))));
+        return std::make_shared<RToken>(token_int, int64(atoll(NumStr.c_str())));
     }
-    if (lastChar == EOF)
+    if (lastChar == WEOF)
         return std::make_shared<RToken>(token_eof, nullptr);
     // 说明啥都不是，那就连续读，一直到EOF或者空格
     std::string ret;
     ret += lastChar;
     if (!isMustSingle(ret)) {
-        while (lastChar != EOF && lastChar != ' ' && !iswdigit(lastChar)) {
+        while (lastChar != WEOF && lastChar != ' ' && !iswdigit(lastChar)) {
             ret += lastChar;
             *fstream >> lastChar;
         }
     }
-    return std::make_shared<RToken>(token_sign, std::make_unique<void *>(&ret));
+    return std::make_shared<RToken>(token_sign, ret);
 }
 
 std::string RToken::GetSign() {
-    return *(std::string *) (*(this->data));
+    return this->strData;
 }
 
 std::string RToken::GetStr() {
-    return *(std::string *) (*(this->data));
+    return this->strData;
 }
 
 int64 RToken::GetInt64() {
-    return *(int64 *) (*(this->data));
+    return this->int64Data;
 }
 
 bool RToken::IsSign(std::string sign) {
     if (this->type != token_sign) {
         return false;
     }
-    return *(std::string *) (*(this->data)) == sign;
+    return GetSign() == sign;
 }

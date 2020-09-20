@@ -3,9 +3,9 @@
 void Module::Parse() {
     // 开始解析
     auto token = reader->ReadAToken();
-    std::cout << token->type << std::endl;
     while (1) {
         if (token->type == token_eof) {
+            std::cout << "Eof" << std::endl;
             break;
         }
         switch (token->type) {
@@ -14,5 +14,6 @@ void Module::Parse() {
             case token_str:
                 Parser::ParseIdentifierExpr(this);
         }
+        exit (0);
     }
 }

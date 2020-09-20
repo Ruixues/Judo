@@ -11,31 +11,33 @@ namespace Parser {
         if (module->nowToken->type != token_str) {
             return module->loger->FunctionProtoParseError("There must be the name of function after 'func'");
         }
-        std::string FunctionName = *((std::string *) (*(module->nowToken->data)));
+        std::string FunctionName = module->nowToken->GetStr();
         auto token = module->ReadAToken();
-        if (token->type != token_sign || *(std::string *) (*(token->data)) != "(") {
+        if (token->type != token_sign || token->GetSign() != "(") {
             return module->loger->FunctionProtoParseError("There must be a '(' after Function Name");
         }
+        std::cout << "Function Name:" << FunctionName << std::endl;
         //开始解析参数
         std::vector<std::unique_ptr<AST::FunctionArg>> args;
         token = module->ReadAToken();
         while (token->type == token_str) {
             //获取到了参数名称
-            std::string name = *((std::string *) (*(module->nowToken->data)));
+            std::string name = token->GetStr();
             //开始获取参数类型
             auto type = module->ReadAToken();
             if (type->type != token_str) {
                 return module->loger->FunctionProtoParseError("There must be the Type Name after the name of variable");
             }
-            args.push_back(std::make_unique<AST::FunctionArg>(JudoType(*((std::string *) (*(type->data)))), name));
+            args.push_back(std::make_unique<AST::FunctionArg>(JudoType(type->strData), name));
+            token = module->ReadAToken();
         }
         //开始处理返回值
-        if (token->type != token_sign || *(std::string *) (*(token->data)) != ")") {
+        if (token->type != token_sign || token->GetSign() != ")") {
             return module->loger->FunctionProtoParseError("There must be a ')' after Args");
         }
         //开始处理返回值
         token = module->ReadAToken();
-        if (token->type != token_sign || *(std::string *) (*(token->data)) != "(") {  //无返回值
+        if (token->type != token_sign || token->GetSign() != "(") {  //无返回值
             //返回值是null
             return std::make_unique<AST::FunctionProto>(FunctionName, std::move(args), "",
                                                         JudoType(Type_void));
@@ -47,14 +49,15 @@ namespace Parser {
                     "Once you decided to add a return value,you can't make the () contains nothing");
         }
         if (token2->type == token_sign) {   //只是规定了类型
-            if (*(std::string *) (*(token2->data)) != ")") {
+            if (token2->GetSign() != ")") {
                 return module->loger->FunctionProtoParseError("There must be a ) after the Type of Return");
             }
             return std::make_unique<AST::FunctionProto>(FunctionName, std::move(args), "",
-                                                        JudoType(*(std::string *) (*(token2->data))));
+                                                        JudoType(token->GetStr()));
         }
-        return std::make_unique<AST::FunctionProto>(FunctionName, std::move(args), *(std::string *) (*(token->data)),
-                                                    JudoType(*(std::string *) (*(token2->data))));
+        module->ReadAToken();
+        return std::make_unique<AST::FunctionProto>(FunctionName, std::move(args), token->GetStr(),
+                                                    JudoType(token2->GetStr()));
     }
 
     int GetTokPrecedence(Module *module) {
@@ -157,7 +160,6 @@ namespace Parser {
         auto proto = ParseFunctionProto(module);
         if (!proto)
             return nullptr;
-        std::cout << "Here Got" << std::endl;
         //开始解析函数内部
         auto inside = ParseExpression(module);
         if (!inside)

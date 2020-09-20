@@ -23,7 +23,7 @@ public:
     }
 
     std::unique_ptr<AST::FunctionProto> FunctionProtoParseError(std::string data) {
-        *ostream << data;
+        //*ostream << data;
         return nullptr;
     }
 };
