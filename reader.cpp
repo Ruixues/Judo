@@ -1,22 +1,28 @@
 #include "reader.h"
+#include <iostream>
 std::shared_ptr<RToken> RxReader::ReadAToken()
 {
     std::string str;
     // 跳跃空格
-    while (isspace(lastChar))
+    while (isspace(lastChar)) {
         *fstream >> lastChar;
+    }
+    std::cout << "Here" << std::endl;
     if (isalpha(lastChar)) //判断是否是英文字母
     {                      // identifier: [a-zA-Z][a-zA-Z0-9]*
         str = lastChar;
         *fstream >> lastChar;
-        while (iswalnum(lastChar))
+        while (iswalnum(lastChar)) {
             str += lastChar;
+            *fstream >> lastChar;
+        }
         if (str == "func") //定义函数
             return std::make_shared<RToken>(token_func, nullptr);
         if (str == "extern") //外部函数
             return std::make_shared<RToken>(token_extern, nullptr);
         return std::make_shared<RToken>(token_str, std::make_unique<void*>(&str));
     }
+    std::cout << "No" << std::endl;
     /*
         TODO : 实现输入字符串
     */

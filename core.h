@@ -18,6 +18,11 @@ public:
     Module(std::string file)
     {
         this->file.open(file, std::ios::in);
+        if (!this->file.good()) {
+            std::cout << "Open Module " << file << " Error" << std::endl;
+            return ;
+        }
+        this->file >> std::noskipws;
         reader = std::make_unique<RxReader>(&(this->file));
         loger = std::make_unique<Log>();
     }

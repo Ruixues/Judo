@@ -28,6 +28,7 @@ void HandleInput (int argc, char *argv[]) {
     std::string input = program.get<std::string>("-i");
     if (input != "") {
         //开始加载
+        std::cout << "Run" << std::endl;
         RunJudoProgram(input);
     }
 }
