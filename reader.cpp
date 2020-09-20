@@ -61,3 +61,12 @@ std::string RToken::GetSign () {
 std::string RToken::GetStr () {
     return *(std::string*)(*(this->data));
 }
+int64 RToken::GetInt64() {
+    return *(int64*)(*(this->data));
+}
+bool RToken::IsSign (std::string sign) {
+    if (this->type != token_sign) {
+        return false;
+    }
+    return *(std::string*)(*(this->data)) == sign;
+}

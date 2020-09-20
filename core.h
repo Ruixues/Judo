@@ -32,11 +32,13 @@ public:
             {
                 break;
             }
-//            switch (token->type)
-//            {
-//            case token_func:
-//                Parser::ParseFunction(this);
-//            }
+            switch (token->type)
+            {
+            case token_func:
+                Parser::ParseFunction(this);
+            case token_str:
+                Parser::ParseIdentifierExpr(this);
+            }
         }
     }
     std::shared_ptr<RToken> ReadAToken()

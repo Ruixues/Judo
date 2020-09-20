@@ -8,8 +8,8 @@
 #include <memory>
 #include <set>
 #include "type.h"
-static bool isspace(wchar_t cr);
-static std::set<std::string> Keywords = {
+ static bool isspace(wchar_t cr);
+ const std::set<std::string> Keywords = {
     "func",
     "return",
     "void",
@@ -31,7 +31,7 @@ enum Token
     token_int = 10,
     token_sign = 11,
 };
-static bool isMustSingle (std::string str) {
+ static bool isMustSingle (std::string str) {
     static std::set<std::string> t = {"{","}","(",")","+","-","*","/","%"};
     return t.find(str) != t.end();
 }
@@ -42,6 +42,8 @@ public:
     std::unique_ptr<void *> data; //真正的数据
     std::string GetSign ();
     std::string GetStr ();
+    int64 GetInt64 ();
+    bool IsSign (std::string sign);
     RToken(Token type, std::unique_ptr<void *> data) : type(type), data(std::move(data)) {}
 };
 class RxReader

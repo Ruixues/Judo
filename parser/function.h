@@ -7,9 +7,10 @@
 class Module;   //解决循环引用
 namespace Parser
 {
-    static std::unique_ptr<AST::FunctionProto> ParseFunctionProto (Module* module);
-    static std::unique_ptr<AST::FunctionAST> ParseFunction(Module *module);
-    static std::unique_ptr<AST::ExprAST> ParseExpression(Module *module);
-    static std::unique_ptr<AST::ExprAST> ParsePrimary(Module *module);
-    static std::unique_ptr<AST::ExprAST> ParseParenExpr(Module *module);
+     std::unique_ptr<AST::FunctionProto> ParseFunctionProto (Module* module);
+    std::unique_ptr<AST::FunctionAST> ParseFunction(Module *module);
+    std::unique_ptr<AST::ExprAST> ParseIdentifierExpr(Module *module);
+     std::unique_ptr<AST::ExprAST> ParseExpression(Module *module);
+     std::unique_ptr<AST::ExprAST> ParsePrimary(Module *module);
+     std::unique_ptr<AST::ExprAST> ParseParenExpr(Module *module);
 } // namespace Parser

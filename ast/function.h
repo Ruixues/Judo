@@ -19,11 +19,11 @@ namespace AST
     {
     private:
         std::string name;
-        std::unique_ptr<std::vector<FunctionArg>> args;
+        std::vector<std::unique_ptr<FunctionArg>> args;
         std::string returnName; //返回变量的名字
         JudoType returnType;
     public:
-        FunctionProto(std::string name,std::unique_ptr<std::vector<FunctionArg>> args,std::string returnName,JudoType returnType) : name (name),args(std::move(args)), returnName(returnName),returnType(returnType)
+        FunctionProto(std::string name,std::vector<std::unique_ptr<FunctionArg>> args,std::string returnName,JudoType returnType) : name (name),args(std::move(args)), returnName(returnName),returnType(returnType)
         {
         }
     };

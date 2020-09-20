@@ -8,7 +8,7 @@ namespace AST
     {
     private:
     public:
-        virtual ~ExprAST();
+        //virtual ~ExprAST();
         //virtual llvm::Value *genCode(); //生成LLVM IR
     };
 } // namespace AST
