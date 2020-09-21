@@ -16,10 +16,12 @@ namespace Parser {
         if (token->type != token_sign || token->GetSign() != "(") {
             return module->loger->FunctionProtoParseError("There must be a '(' after Function Name");
         }
+        std::cout << token->GetSign() << std::endl;
         std::cout << "Function Name:" << FunctionName << std::endl;
         //开始解析参数
         std::vector<std::unique_ptr<AST::FunctionArg>> args;
         token = module->ReadAToken();
+        std::cout << token->GetSign() << std::endl;
         while (token->type == token_str) {
             //获取到了参数名称
             std::string name = token->GetStr();
@@ -32,13 +34,15 @@ namespace Parser {
             token = module->ReadAToken();
         }
         //开始处理返回值
-        if (token->type != token_sign || token->GetSign() != ")") {
+        if (!token->IsSign(")")) {
             return module->loger->FunctionProtoParseError("There must be a ')' after Args");
         }
-        //开始处理返回值
+        std::cout << "Get In" << std::endl;
         token = module->ReadAToken();
+        std::cout << "Get In2" << std::endl;
         if (token->type != token_sign || token->GetSign() != "(") {  //无返回值
             //返回值是null
+            std::cout << "Get In" << std::endl;
             return std::make_unique<AST::FunctionProto>(FunctionName, std::move(args), "",
                                                         JudoType(Type_void));
         }
@@ -130,6 +134,7 @@ namespace Parser {
                 if (module->nowToken->type != token_sign || module->nowToken->GetSign() != ",") {
                     return module->loger->ParseError("Function Call", "Expected ')' or ',' in argument list");
                 }
+                module->ReadAToken();
             }
         }
         module->ReadAToken();   //吃掉)

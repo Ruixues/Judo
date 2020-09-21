@@ -6,9 +6,8 @@
 namespace AST {
     class CodeBlockAST : public ExprAST {
     private:
-        std::vector<ExprAST> codes;
-
+        std::vector<std::unique_ptr<ExprAST>> codes;
     public:
-        CodeBlockAST(std::vector<ExprAST> codes) : codes(codes) {}
+        CodeBlockAST(std::vector<std::unique_ptr<ExprAST>> codes) : codes(std::move(codes)) {}
     };
 }; // namespace AST

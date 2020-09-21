@@ -18,12 +18,12 @@ public:
     }
 
     std::unique_ptr<AST::ExprAST> ParseError(std::string ParseModule, std::string data) {
-        *ostream << ParseModule << " " << data;
+        *ostream << ParseModule << " " << data << std::endl;
         return nullptr;
     }
 
     std::unique_ptr<AST::FunctionProto> FunctionProtoParseError(std::string data) {
-        //*ostream << data;
+        *ostream << data << std::endl;
         return nullptr;
     }
 };

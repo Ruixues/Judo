@@ -54,6 +54,8 @@ std::shared_ptr<RToken> RxReader::ReadAToken() {
             ret += lastChar;
             *fstream >> lastChar;
         }
+    } else {
+        *fstream >> lastChar;
     }
     return std::make_shared<RToken>(token_sign, ret);
 }
