@@ -1,7 +1,6 @@
 #include "core.h"
 
 
-
 void Module::Parse() {
     // 开始解析
     auto token = reader->ReadAToken();
@@ -15,10 +14,11 @@ void Module::Parse() {
         if (!tmp) {
             return;
         }
-        codes.push_back(std::move (tmp));
+        codes.push_back(std::move(tmp));
     }
 }
-std::unique_ptr<AST::ExprAST> Module::HandleToken (std::shared_ptr<RToken> token) {
+
+std::unique_ptr<AST::ExprAST> Module::HandleToken(std::shared_ptr<RToken> token) {
     switch (token->type) {
         case token_func:
             return Parser::ParseFunction(this);
@@ -28,6 +28,8 @@ std::unique_ptr<AST::ExprAST> Module::HandleToken (std::shared_ptr<RToken> token
             if (token->IsSign("{")) {   //代码块
                 return Parser::ParseCodeBlock(this);
             }
+        case token_var:
+            return Parser::ParserVariableDefine(this);
     }
     return nullptr;
 }

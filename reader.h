@@ -21,7 +21,7 @@ const std::set<std::string> Keywords = {
         "else",
 };
 enum Token {
-    token_codeBlock = 1,
+    token_var = 1,
     token_str = 2,
     token_func = 3,
     token_return = 4,
@@ -34,8 +34,10 @@ enum Token {
     token_sign = 11,
 };
 
+#include <iostream>
+
 static bool isMustSingle(std::string str) {
-    static std::set<std::string> t = {"{", "}", "(", ")", "+", "-", "*", "/", "%"};
+    static std::set<std::string> t = {"{", "}", "(", ")", "+", "-", "*", "/", "%", ":"};
     return t.find(str) != t.end();
 }
 
@@ -77,5 +79,5 @@ public:
 };
 
 static bool isspace(wchar_t cr) {
-    return cr == ' ';
+    return iswspace(cr);
 }

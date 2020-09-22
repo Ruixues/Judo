@@ -21,6 +21,9 @@ std::shared_ptr<RToken> RxReader::ReadAToken() {
             return std::make_shared<RToken>(token_func);
         if (str == "extern") //外部函数
             return std::make_shared<RToken>(token_extern);
+        if (str == "var") {
+            return std::make_shared<RToken>(token_var);
+        }
         return std::make_shared<RToken>(token_str, str);
     }
     /*

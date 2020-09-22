@@ -27,8 +27,11 @@ public:
         reader = std::make_unique<RxReader>(&(this->file));
         loger = std::make_unique<Log>();
     }
+
     void Parse();
-    std::unique_ptr<AST::ExprAST> HandleToken (std::shared_ptr<RToken> token);
+
+    std::unique_ptr<AST::ExprAST> HandleToken(std::shared_ptr<RToken> token);
+
     std::shared_ptr<RToken> ReadAToken() {
         nowToken = reader->ReadAToken();
         return nowToken;

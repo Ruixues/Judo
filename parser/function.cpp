@@ -1,7 +1,7 @@
 #include "function.h"
 #include "../core.h"
 #include "../ast/binaryOpt.h"
-#include "../ast/variable.h"
+#include "../ast/variableDefine.h"
 #include "../ast/FunctionCall.h"
 #include <memory>
 #include <vector>
@@ -16,12 +16,9 @@ namespace Parser {
         if (token->type != token_sign || token->GetSign() != "(") {
             return module->loger->FunctionProtoParseError("There must be a '(' after Function Name");
         }
-        std::cout << token->GetSign() << std::endl;
-        std::cout << "Function Name:" << FunctionName << std::endl;
         //开始解析参数
         std::vector<std::unique_ptr<AST::FunctionArg>> args;
         token = module->ReadAToken();
-        std::cout << token->GetSign() << std::endl;
         while (token->type == token_str) {
             //获取到了参数名称
             std::string name = token->GetStr();
@@ -37,12 +34,9 @@ namespace Parser {
         if (!token->IsSign(")")) {
             return module->loger->FunctionProtoParseError("There must be a ')' after Args");
         }
-        std::cout << "Get In" << std::endl;
         token = module->ReadAToken();
-        std::cout << "Get In2" << std::endl;
         if (token->type != token_sign || token->GetSign() != "(") {  //无返回值
             //返回值是null
-            std::cout << "Get In" << std::endl;
             return std::make_unique<AST::FunctionProto>(FunctionName, std::move(args), "",
                                                         JudoType(Type_void));
         }
@@ -149,10 +143,13 @@ namespace Parser {
             case token_str:
                 return ParseIdentifierExpr(module);   //可能是变量，也可能是函数调用
             case token_int:
-//                return ParseNumberExpr();
+                return ParseNumber(module);
             case token_sign: {
-                if (token->GetSign() == "(") { //括号开始
+                if (token->IsSign("(")) { //括号开始
                     return ParseParenExpr(module);
+                }
+                if (token->IsSign("{")) {
+                    return ParseCodeBlock(module);
                 }
             }
         }
@@ -167,8 +164,9 @@ namespace Parser {
             return nullptr;
         //开始解析函数内部
         auto inside = ParseExpression(module);
-        if (!inside)
+        if (!inside) {
             return nullptr;
+        }
         return std::make_unique<AST::FunctionAST>(std::move(proto), std::move(inside));
     }
 }
