@@ -1,24 +1,42 @@
 #include "reader.h"
 #include <iostream>
 
+
+static wchar_t ReadChar (std::wifstream* file) {
+    wchar_t ret;
+    if (file->eof()) {
+        return WEOF;
+    }
+    *file >> ret;
+    return ret;
+}
 std::shared_ptr<RToken> RxReader::ReadAToken() {
-    if (lastChar == WEOF)
-        return std::make_shared<RToken>(token_eof, nullptr);
+//    std::string ttt;
+//    for (auto t = ReadChar(fstream);t != WEOF;t = ReadChar(fstream)) {
+//        ttt += t;
+//    }
+//    std::cout << ttt << std::endl;
+//    exit (0);
+    if (lastChar == WEOF) {
+        return std::make_shared<RToken>(token_eof);
+    }
     std::string str;
     // 跳跃空格
-    while (isspace(lastChar)) {
-        *fstream >> lastChar;
+    while (isspace(lastChar) && !fstream->eof()) {
+        lastChar = ReadChar(fstream);
     }
     if (isalpha(lastChar)) //判断是否是英文字母
     {                      // identifier: [a-zA-Z][a-zA-Z0-9]*
         str = lastChar;
-        *fstream >> lastChar;
+        lastChar = ReadChar(fstream);
         while (iswalnum(lastChar)) {
             str += lastChar;
-            *fstream >> lastChar;
+            lastChar = ReadChar(fstream);
         }
-        if (str == "func") //定义函数
-            return std::make_shared<RToken>(token_func);
+        if (str == "func") { //定义函数
+            auto ret = std::make_shared<RToken>(token_func);
+            return ret;
+        }
         if (str == "extern") //外部函数
             return std::make_shared<RToken>(token_extern);
         if (str == "var") {
@@ -40,7 +58,7 @@ std::shared_ptr<RToken> RxReader::ReadAToken() {
                 tdouble = true;
             }
             NumStr += lastChar;
-            *fstream >> lastChar;
+            lastChar = ReadChar(fstream);
         } while (iswdigit(lastChar) || lastChar == '.');
         if (tdouble) {
             return std::make_shared<RToken>(token_double, atof(NumStr.c_str()));
@@ -48,17 +66,17 @@ std::shared_ptr<RToken> RxReader::ReadAToken() {
         return std::make_shared<RToken>(token_int, int64(atoll(NumStr.c_str())));
     }
     if (lastChar == WEOF)
-        return std::make_shared<RToken>(token_eof, nullptr);
+        return std::make_shared<RToken>(token_eof);
     // 说明啥都不是，那就连续读，一直到EOF或者空格
     std::string ret;
     ret += lastChar;
     if (!isMustSingle(ret)) {
         while (lastChar != WEOF && lastChar != ' ' && !iswdigit(lastChar)) {
             ret += lastChar;
-            *fstream >> lastChar;
+            lastChar = ReadChar(fstream);
         }
     } else {
-        *fstream >> lastChar;
+        lastChar = ReadChar(fstream);
     }
     return std::make_shared<RToken>(token_sign, ret);
 }

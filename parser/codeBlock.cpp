@@ -12,7 +12,6 @@ namespace Parser {
         module->ReadAToken();
         std::vector<std::unique_ptr<AST::ExprAST>> codes;
         while (!module->nowToken->IsSign("}") && module->nowToken) {
-            std::cout << "Here" << std::endl;
             auto tmp = ParseExpression(module);
             if (!tmp) {
                 return nullptr;
@@ -21,7 +20,6 @@ namespace Parser {
         }
         //那就表示完成了
         module->ReadAToken();   //吃掉}
-        std::cout << "Done" << std::endl;
         return std::make_unique<AST::CodeBlockAST>(std::move(codes));
     }
 }

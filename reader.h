@@ -55,14 +55,19 @@ public:
     int64 GetInt64();
 
     bool IsSign(std::string sign);
+    bool IsSign(char sign);
 
     RToken(Token type, int64 i64Data) : int64Data(i64Data) {}
 
     RToken(Token type) : type(type) {}
 
-    RToken(Token type, double doubleData) : type(type), doubleData(doubleData) {}
+    RToken(Token type, double doubleData) : type(type), doubleData(doubleData) {
+
+    }
 
     RToken(Token type, std::string strData) : type(type), strData(strData) {}
+
+
 };
 
 class RxReader {

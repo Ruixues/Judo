@@ -7,7 +7,6 @@ void Module::Parse() {
     std::vector<std::unique_ptr<AST::ExprAST>> codes;
     while (1) {
         if (token->type == token_eof) {
-            std::cout << "Eof" << std::endl;
             break;
         }
         auto tmp = HandleToken(token);
@@ -15,6 +14,7 @@ void Module::Parse() {
             return;
         }
         codes.push_back(std::move(tmp));
+        token = reader->ReadAToken();
     }
 }
 
@@ -30,6 +30,8 @@ std::unique_ptr<AST::ExprAST> Module::HandleToken(std::shared_ptr<RToken> token)
             }
         case token_var:
             return Parser::ParserVariableDefine(this);
+        default:
+            return loger->ParseError("Core","unexpected token type");
     }
     return nullptr;
 }

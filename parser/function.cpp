@@ -144,6 +144,8 @@ namespace Parser {
                 return ParseIdentifierExpr(module);   //可能是变量，也可能是函数调用
             case token_int:
                 return ParseNumber(module);
+            case token_eof:
+                return nullptr;
             case token_sign: {
                 if (token->IsSign("(")) { //括号开始
                     return ParseParenExpr(module);
