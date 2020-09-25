@@ -18,4 +18,6 @@ namespace Parser {
     std::unique_ptr<AST::ExprAST> ParsePrimary(Module *module);
 
     std::unique_ptr<AST::ExprAST> ParseParenExpr(Module *module);
+
+    
 } // namespace Parser

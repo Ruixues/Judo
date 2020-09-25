@@ -37,7 +37,7 @@ enum Token {
 #include <iostream>
 
 static bool isMustSingle(std::string str) {
-    static std::set<std::string> t = {"{", "}", "(", ")", "+", "-", "*", "/", "%", ":"};
+    static std::set<std::string> t = {"{", "}", "(", ")", "+", "-", "*", "/", "%", ":", ";"};
     return t.find(str) != t.end();
 }
 
@@ -55,6 +55,7 @@ public:
     int64 GetInt64();
 
     bool IsSign(std::string sign);
+
     bool IsSign(char sign);
 
     RToken(Token type, int64 i64Data) : int64Data(i64Data) {}

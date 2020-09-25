@@ -31,7 +31,7 @@ std::unique_ptr<AST::ExprAST> Module::HandleToken(std::shared_ptr<RToken> token)
         case token_var:
             return Parser::ParserVariableDefine(this);
         default:
-            return loger->ParseError("Core","unexpected token type");
+            return loger->ParseError("Core", "unexpected token type");
     }
     return nullptr;
 }

@@ -2,7 +2,7 @@
 #include <iostream>
 
 
-static wchar_t ReadChar (std::wifstream* file) {
+static wchar_t ReadChar(std::wifstream *file) {
     wchar_t ret;
     if (file->eof()) {
         return WEOF;
@@ -10,6 +10,7 @@ static wchar_t ReadChar (std::wifstream* file) {
     *file >> ret;
     return ret;
 }
+
 std::shared_ptr<RToken> RxReader::ReadAToken() {
 //    std::string ttt;
 //    for (auto t = ReadChar(fstream);t != WEOF;t = ReadChar(fstream)) {
@@ -41,6 +42,12 @@ std::shared_ptr<RToken> RxReader::ReadAToken() {
             return std::make_shared<RToken>(token_extern);
         if (str == "var") {
             return std::make_shared<RToken>(token_var);
+        }
+        if (str == "if") {
+            return std::make_shared<RToken>(token_if);
+        }
+        if (str == "else") {
+            return std::make_shared<RToken>(token_else);
         }
         return std::make_shared<RToken>(token_str, str);
     }

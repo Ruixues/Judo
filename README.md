@@ -15,3 +15,8 @@ var VariableName Type
 或者  
 var VariableName Type = Value  
 类型必须显式指定
+
+对于If语句，有两种形式
+if Condition 或者if Init;Condition
+
+else同样支持

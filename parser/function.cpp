@@ -139,7 +139,7 @@ namespace Parser {
         auto token = module->nowToken;
         switch (token->type) {
             default:
-                return module->loger->ParseError("function", "未知的标记类型");
+                return module->loger->ParseError("Parse Primary", "未知的标记类型");
             case token_str:
                 return ParseIdentifierExpr(module);   //可能是变量，也可能是函数调用
             case token_int:
@@ -154,6 +154,8 @@ namespace Parser {
                     return ParseCodeBlock(module);
                 }
             }
+            case token_if:
+                return ParseIf(module);
         }
         return nullptr;
     }
