@@ -22,7 +22,11 @@ namespace AST {
         std::vector<std::unique_ptr<FunctionArg>> args;
         std::string returnName; //返回变量的名字
         JudoType returnType;
+        Module* module;
     public:
+        void SetModule (Module* module) {
+            this->module = module;
+        }
         FunctionProto(std::string name, std::vector<std::unique_ptr<FunctionArg>> args, std::string returnName,
                       JudoType returnType) : name(name), args(std::move(args)), returnName(returnName),
                                              returnType(returnType) {

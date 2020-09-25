@@ -7,12 +7,19 @@ class Module;
 namespace AST {
     class ExprAST {
     private:
-        std::shared_ptr<Module> module;
+        Module* module;
     public:
         //virtual ~ExprAST();
-        void SetModule (std::shared_ptr<Module> module) {
+        void SetModule (Module* module) {
             this->module = module;
         }
-        virtual llvm::Value *genCode(); //生成LLVM IR
+        //virtual llvm::Value *genCode(); //生成LLVM IR
     };
 } // namespace AST
+class Module;
+template<typename T, typename... _Args>
+std::unique_ptr<T> make_AST (Module* module,_Args&&... __args) {
+    auto tmp = std::unique_ptr<T>(new T(std::forward<_Args>(__args)...));
+    tmp->SetModule (module);
+    return tmp;
+}

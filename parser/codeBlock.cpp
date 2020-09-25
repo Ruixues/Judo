@@ -20,6 +20,6 @@ namespace Parser {
         }
         //那就表示完成了
         module->ReadAToken();   //吃掉}
-        return std::make_unique<AST::CodeBlockAST>(std::move(codes));
+        return make_AST<AST::CodeBlockAST>(module,std::move(codes));
     }
 }

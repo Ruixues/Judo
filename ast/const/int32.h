@@ -13,9 +13,9 @@ namespace AST {
             int32 data;
         public:
             TInt32(int32 data) : data(data) {}
-            llvm::Value* genCode () {
-                return ConstantFP::get(TheContext, APFloat(Val));
-            }
+            // llvm::Value* genCode () {
+            //     return llvm::ConstantFP::get(TheContext, APFloat(Val));
+            // }
         };
     }; // namespace Const
 };     // namespace AST

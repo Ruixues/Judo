@@ -17,10 +17,10 @@ private:
 public:
     std::unique_ptr<Log> loger;
     std::shared_ptr<RToken> nowToken;
-    llvm::LLVMContext context;
-    llvm::IRBuilder<> Builder;
-    std::unique_ptr<llvm::Module> module;
-    Module(std::string file) : Builder(context)
+    // llvm::LLVMContext context;
+    // llvm::IRBuilder<> Builder;
+    // std::unique_ptr<llvm::Module> module;
+    Module(std::string file)// : Builder(context)
     {
         this->file.open(file, std::ios::in);
         if (!this->file.good())
@@ -29,8 +29,6 @@ public:
             return;
         }
         this->file >> std::noskipws;
-        llvm::LLVMContext context;
-        llvm::IRBuilder<> Builder(context);
         reader = std::make_unique<RxReader>(&(this->file));
         loger = std::make_unique<Log>();
     }
