@@ -32,7 +32,7 @@ public:
         return nullptr;
     }
 
-    void *GenCodeError(std::string data) {
+    llvm::Value *GenCodeError(std::string data) {
         *ostream << data << std::endl;
         return nullptr;
     }
