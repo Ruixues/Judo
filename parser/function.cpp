@@ -1,7 +1,6 @@
 #include "function.h"
 #include "../core.h"
 #include "../ast/binaryOpt.h"
-#include "../ast/variableDefine.h"
 #include "../ast/FunctionCall.h"
 #include <memory>
 #include <vector>
@@ -37,8 +36,8 @@ namespace Parser {
         token = module->ReadAToken();
         if (token->type != token_sign || token->GetSign() != "(") {  //无返回值
             //返回值是null
-            return make_AST<AST::FunctionProto>(module,FunctionName, std::move(args), "",
-                                                        JudoType(Type_void));
+            return make_AST<AST::FunctionProto>(module, FunctionName, std::move(args), "",
+                                                JudoType(Type_void));
         }
         token = module->ReadAToken();
         auto token2 = module->ReadAToken();
@@ -50,12 +49,12 @@ namespace Parser {
             if (token2->GetSign() != ")") {
                 return module->loger->FunctionProtoParseError("There must be a ) after the Type of Return");
             }
-            return make_AST<AST::FunctionProto>(module,FunctionName, std::move(args), "",
-                                                        JudoType(token->GetStr()));
+            return make_AST<AST::FunctionProto>(module, FunctionName, std::move(args), "",
+                                                JudoType(token->GetStr()));
         }
         module->ReadAToken();
-        return make_AST<AST::FunctionProto>(module,FunctionName, std::move(args), token->GetStr(),
-                                                    JudoType(token2->GetStr()));
+        return make_AST<AST::FunctionProto>(module, FunctionName, std::move(args), token->GetStr(),
+                                            JudoType(token2->GetStr()));
     }
 
     int GetTokPrecedence(Module *module) {
@@ -91,8 +90,8 @@ namespace Parser {
                 if (!RHS)
                     return nullptr;
             }
-            LHS = make_AST<AST::BinaryExprAST>(module,BinOp, std::move(LHS),
-                                                       std::move(RHS));
+            LHS = make_AST<AST::BinaryExprAST>(module, BinOp, std::move(LHS),
+                                               std::move(RHS));
         }
     }
 
@@ -109,7 +108,7 @@ namespace Parser {
         auto next = module->ReadAToken();
         if (next->type != token_str || next->GetStr() != "(") {
             //就是变量
-            return make_AST<AST::VariableExpr>(module,strName);
+            return make_AST<AST::VariableExpr>(module, strName);
         }
         //否则就是函数调用
         module->ReadAToken();   //吃掉(
@@ -132,7 +131,7 @@ namespace Parser {
             }
         }
         module->ReadAToken();   //吃掉)
-        return make_AST<AST::FunctionCall>(module,strName, std::move(Args));
+        return make_AST<AST::FunctionCall>(module, strName, std::move(Args));
     }
 
     std::unique_ptr<AST::ExprAST> ParsePrimary(Module *module) {
@@ -171,6 +170,6 @@ namespace Parser {
         if (!inside) {
             return nullptr;
         }
-        return make_AST<AST::FunctionAST>(module,std::move(proto), std::move(inside));
+        return make_AST<AST::FunctionAST>(module, std::move(proto), std::move(inside));
     }
 }

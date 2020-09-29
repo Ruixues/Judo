@@ -31,4 +31,12 @@ public:
             CustomTypeName = TypeName;
         }
     }
+
+    llvm::Type *getType(llvm::LLVMContext &context) {
+        switch (t) {
+            case Type_int32
+                return llvm::Type::getInt32Ty(context).get;
+        }
+        return llvm::Type::getFloatTy(context);
+    }
 };

@@ -26,4 +26,14 @@ public:
         *ostream << data << std::endl;
         return nullptr;
     }
+
+    llvm::Function *GetFunctionError(std::string data) {
+        *ostream << data << std::endl;
+        return nullptr;
+    }
+
+    void *GenCodeError(std::string data) {
+        *ostream << data << std::endl;
+        return nullptr;
+    }
 };

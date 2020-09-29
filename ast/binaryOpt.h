@@ -20,5 +20,13 @@ namespace AST {
                                                                                                  r(std::move(r)) {
 
         }
+        llvm::Value *genCode() {
+            auto ll = l->genCode(), rr = r->genCode();
+            auto f = module->opHandler->getBinaryOp(opt, ll, rr);
+            if (!f)
+                return nullptr;
+            llvm::Value *Ops[2] = {ll, rr};
+            return module->Builder.CreateCall(f, Ops, "binaryOp");
+        }
     };
 }
