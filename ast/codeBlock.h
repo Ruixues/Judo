@@ -15,6 +15,7 @@ namespace AST {
             for (auto &v:codes) {
                 v->genCode();
             }
+            return nullptr;
             // auto TheFunction = module->Builder.GetInsertBlock()->getParent(); //获取插入点
             // auto BB = llvm::BasicBlock::Create(module->context, "block", TheFunction);
             // auto Then = llvm::BasicBlock::Create(module->context, "then", TheFunction);

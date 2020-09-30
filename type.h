@@ -2,6 +2,7 @@
 // 类型系统
 // 内置类型 (后期实现类之后使用类替代)
 #include <string>
+#include "llvmInclude.h"
 
 #define int32 int32_t
 #define int64 int64_t
@@ -32,11 +33,11 @@ public:
         }
     }
 
-    llvm::Type *getType(llvm::LLVMContext &context) {
-        switch (t) {
-            case Type_int32
-                return llvm::Type::getInt32Ty(context).get;
-        }
-        return llvm::Type::getFloatTy(context);
-    }
+//    llvm::Type *getType(llvm::LLVMContext &context) {
+//        switch (t) {
+//            case Type_int32
+//                return llvm::Type::getInt32Ty(context)->IntegerTyID;
+//        }
+//        return llvm::Type::getFloatTy(context);
+//    }
 };

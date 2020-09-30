@@ -49,6 +49,7 @@ namespace AST {
                                                                                            code(std::move(code)) {
 
         }
+
         llvm::Value *genCode();
     };
 }; // namespace AST

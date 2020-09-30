@@ -6,10 +6,7 @@
 #include <map>
 
 namespace AST {
-    std::map<std::string, int> BinopPrecedence = {{"<", 10},
-                                                  {"+", 20},
-                                                  {"-", 30},
-                                                  {"*", 40}};
+    extern std::map<std::string, int> BinopPrecedence;
 
     class BinaryExprAST : public ExprAST {
         std::string opt;
@@ -20,13 +17,7 @@ namespace AST {
                                                                                                  r(std::move(r)) {
 
         }
-        llvm::Value *genCode() {
-            auto ll = l->genCode(), rr = r->genCode();
-            auto f = module->opHandler->getBinaryOp(opt, ll, rr);
-            if (!f)
-                return nullptr;
-            llvm::Value *Ops[2] = {ll, rr};
-            return module->Builder.CreateCall(f, Ops, "binaryOp");
-        }
+
+        llvm::Value *genCode();
     };
 }

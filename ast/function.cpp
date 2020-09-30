@@ -17,6 +17,6 @@ namespace AST {
         //开始进入新的作用域，应当改变部分变量的引用
         std::map<std::string, llvm::Value *> buf;
         //开始根据参数设置
-
+        return nullptr;
     }
 }

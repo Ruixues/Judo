@@ -3,7 +3,7 @@
 #include "../AST.h"
 #include "../../llvmInclude.h"
 #include "../../type.h"
-#include "../../core.h"
+
 /**
  * 该文件用来处理一些内置类型常量 比如double,int等
  **/
@@ -15,9 +15,7 @@ namespace AST {
         public:
             TInt32(int32 data) : data(data) {}
 
-            llvm::Value *genCode() {
-                return llvm::ConstantInt::get(module->context, llvm::APInt(32, uint64_t(data), true));
-            }
+            llvm::Value *genCode();
         };
     }; // namespace Const
 };     // namespace AST
