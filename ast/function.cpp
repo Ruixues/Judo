@@ -39,12 +39,13 @@ namespace AST {
         defer (for (auto &arg:f->args()) {
             module->namedValues.erase(arg.getName());
         });
-        if (auto ret = code->genCode()) {
+        if (code->genCode()) {
             //开始判断当前位置，是否已经创建了return语句
             if (module->Builder.GetInsertBlock()->getParent()->getName() == proto->name) {  //函数没有返回
                 module->Builder.CreateRetVoid();
             }
             llvm::verifyFunction(*f);
+            module->core->FPM->run(*f);
             return f;
         }
         //开始根据参数设置

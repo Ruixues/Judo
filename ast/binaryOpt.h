@@ -4,7 +4,7 @@
 #include "AST.h"
 #include <memory>
 #include <map>
-
+#include <iostream>
 namespace AST {
     extern std::map<std::string, int> BinopPrecedence;
 
@@ -15,7 +15,6 @@ namespace AST {
         BinaryExprAST(std::string opt, std::unique_ptr<ExprAST> l, std::unique_ptr<ExprAST> r) : opt(opt),
                                                                                                  l(std::move(l)),
                                                                                                  r(std::move(r)) {
-
         }
 
         llvm::Value *genCode();

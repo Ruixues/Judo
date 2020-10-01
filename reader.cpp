@@ -29,8 +29,7 @@ std::shared_ptr<RToken> RxReader::ReadAToken() {
             lastChar = ReadChar(fstream);
         }
         if (str == "func") { //定义函数
-            auto ret = std::make_shared<RToken>(token_func);
-            return ret;
+            return std::make_shared<RToken>(token_func);
         }
         if (str == "extern") //外部函数
             return std::make_shared<RToken>(token_extern);
@@ -52,6 +51,7 @@ std::shared_ptr<RToken> RxReader::ReadAToken() {
     }
     if (iswdigit(lastChar) || lastChar == '.') //如果是数字
     {                                          // Number: [0-9.]+
+
         std::string NumStr;
         bool tdouble = false;
         do {

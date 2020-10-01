@@ -21,7 +21,6 @@ namespace Parser {
         }
         if (module->nowToken && module->nowToken->IsSign("}")) {
             module->ReadAToken();   //吃掉}
-            //std::cout << "Sign:" << module->nowToken->type << std::endl;
         }
         return make_AST<AST::CodeBlockAST>(module, std::move(codes));
     }

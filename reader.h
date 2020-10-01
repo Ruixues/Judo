@@ -58,7 +58,7 @@ public:
 
     bool IsSign(char sign);
 
-    RToken(Token type, int64 i64Data) : int64Data(i64Data) {}
+    RToken(Token type, int64 i64Data) : type(type), int64Data(i64Data) {}
 
     RToken(Token type) : type(type) {}
 

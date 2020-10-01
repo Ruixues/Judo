@@ -15,7 +15,7 @@ llvm::Function *OpHandler::getBinaryOp(std::string opt, llvm::Value *a, llvm::Va
     return opLink[typeToStr(a->getType())][typeToStr(b->getType())][opt];
 }
 
-bool OpHandler::linkOp(const std::string &a,const std::string &b,const std::string &opt, llvm::Function *function) {
+bool OpHandler::linkOp(const std::string &a, const std::string &b, const std::string &opt, llvm::Function *function) {
     opLink[a][b][opt] = function;
     return true;
 }

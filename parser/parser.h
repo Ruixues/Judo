@@ -7,4 +7,5 @@
 #include "variableDefine.h"
 #include "const/number.h"
 #include "if.h"
+#include "extern.h"
 #include <memory>
