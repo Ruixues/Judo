@@ -33,7 +33,7 @@ Module::Module(std::string file) : Builder(context) {
     reader = std::make_unique<RxReader>(&(this->file));
     loger = std::make_unique<Log>();
     opHandler = std::make_unique<OpHandler>(this);
-    module = std::make_unique<llvm::Module>("judo", context);
+    module = std::make_unique<llvm::Module>(file, context);
 }
 
 std::unique_ptr<AST::ExprAST> Module::HandleToken(std::shared_ptr<RToken> token) {

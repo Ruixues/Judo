@@ -1,5 +1,6 @@
 #include "function.h"
 #include "../core.h"
+#include "../other/defer.h"
 
 namespace AST {
     llvm::Function *FunctionProto::genFunction() {
@@ -35,6 +36,9 @@ namespace AST {
         for (auto &arg:f->args()) {
             module->namedValues[arg.getName()] = &arg;
         }
+        defer (for (auto &arg:f->args()) {
+            module->namedValues.erase(arg.getName());
+        });
         if (auto ret = code->genCode()) {
             //开始判断当前位置，是否已经创建了return语句
             if (module->Builder.GetInsertBlock()->getParent()->getName() == proto->name) {  //函数没有返回
