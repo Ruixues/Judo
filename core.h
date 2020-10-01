@@ -5,11 +5,10 @@
 #include <string>
 #include <memory>
 #include "reader.h"
-#include "parser/parser.h"
 #include "loger.h"
 #include "opHandler.h"
-
 //每个文件都是一个module.
+
 class Module {
 private:
     std::wifstream file;
@@ -23,17 +22,7 @@ public:
     std::map<std::string, llvm::Value *> namedValues;
     std::unique_ptr<OpHandler> opHandler;
 
-    Module(std::string file) : Builder(context) {
-        this->file.open(file, std::ios::in);
-        if (!this->file.good()) {
-            std::cout << "Open Module " << file << " Error" << std::endl;
-            return;
-        }
-        this->file >> std::noskipws;
-        reader = std::make_unique<RxReader>(&(this->file));
-        loger = std::make_unique<Log>();
-        opHandler = std::make_unique<OpHandler>(this);
-    }
+    Module(std::string file);
 
     void Parse();
 

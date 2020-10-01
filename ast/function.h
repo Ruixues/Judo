@@ -37,6 +37,7 @@ namespace AST {
             for (auto &arg:args) {
 
             }
+            return nullptr;
         }
     };
 

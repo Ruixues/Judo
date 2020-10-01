@@ -1,5 +1,5 @@
 #include "core.h"
-
+#include "parser/parser.h"
 
 void Module::Parse() {
     // 开始解析
@@ -16,6 +16,18 @@ void Module::Parse() {
         codes.push_back(std::move(tmp));
         token = reader->ReadAToken();
     }
+}
+
+Module::Module(std::string file) : Builder(context) {
+    this->file.open(file, std::ios::in);
+    if (!this->file.good()) {
+        std::cout << "Open Module " << file << " Error" << std::endl;
+        return;
+    }
+    this->file >> std::noskipws;
+    reader = std::make_unique<RxReader>(&(this->file));
+    loger = std::make_unique<Log>();
+    opHandler = std::make_unique<OpHandler>(this);
 }
 
 std::unique_ptr<AST::ExprAST> Module::HandleToken(std::shared_ptr<RToken> token) {

@@ -1,5 +1,6 @@
 #include "function.h"
 #include "../core.h"
+
 namespace AST {
     llvm::Value *FunctionAST::genCode() {
         auto f = module->module->getFunction(proto->name);

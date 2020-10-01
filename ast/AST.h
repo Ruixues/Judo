@@ -3,20 +3,18 @@
 #include "../llvmInclude.h"
 #include <memory>
 #include <vector>
-
+#include <utility>
 class Module;
 namespace AST {
     class ExprAST {
-    private:
     public:
         Module *module;
 
-        ~ExprAST() {}
-        void SetModule(Module *module) {
-            this->module = module;
-        }
+        virtual ~ExprAST() = default;
 
-        virtual llvm::Value *genCode(); //生成LLVM IR
+        void SetModule(Module *module);
+
+        virtual llvm::Value *genCode() = 0; //生成LLVM IR
     };
 } // namespace AST
 

@@ -13,9 +13,7 @@ namespace AST {
         public:
             TDouble(double data) : data(data) {}
 
-            llvm::Value *genCode() {
-                return llvm::ConstantFP::get(module->context, llvm::APFloat(data));
-            }
+            llvm::Value *genCode();
         };
     }; // namespace Const
 };     // namespace AST

@@ -2,6 +2,7 @@
 #include "../ast/codeBlock.h"
 #include "../core.h"
 #include <vector>
+#include "function.h"
 
 namespace Parser {
     std::unique_ptr<AST::ExprAST> ParseCodeBlock(Module *module) {

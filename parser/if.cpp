@@ -1,6 +1,7 @@
 #include "if.h"
 #include "../ast/if.h"
 #include "../core.h"
+#include "function.h"
 
 namespace Parser {
     std::unique_ptr<AST::ExprAST> ParseIf(Module *module) {

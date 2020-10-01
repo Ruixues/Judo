@@ -2,8 +2,13 @@
 #include "../core.h"
 #include "../ast/binaryOpt.h"
 #include "../ast/FunctionCall.h"
+#include "../ast/function.h"
 #include <memory>
 #include <vector>
+#include "../ast/variableDefine.h"
+#include "const/number.h"
+#include "codeBlock.h"
+#include "if.h"
 
 namespace Parser {
     std::unique_ptr<AST::FunctionProto> ParseFunctionProto(Module *module) {
