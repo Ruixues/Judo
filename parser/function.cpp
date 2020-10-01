@@ -164,6 +164,7 @@ namespace Parser {
     }
 
     std::unique_ptr<AST::FunctionAST> ParseFunction(Module *module) {
+        //std::cout << module->nowToken->type << std::endl;
         auto token = module->ReadAToken();  //吃掉 func 标识符
         //开始解析函数的定义
         auto proto = ParseFunctionProto(module);

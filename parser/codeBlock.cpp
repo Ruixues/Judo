@@ -12,15 +12,17 @@ namespace Parser {
         //开始解析
         module->ReadAToken();
         std::vector<std::unique_ptr<AST::ExprAST>> codes;
-        while (!module->nowToken->IsSign("}") && module->nowToken) {
+        while (module->nowToken && !module->nowToken->IsSign("}")) {
             auto tmp = ParseExpression(module);
             if (!tmp) {
                 return nullptr;
             }
             codes.push_back(std::move(tmp));
         }
-        //那就表示完成了
-        module->ReadAToken();   //吃掉}
+        if (module->nowToken && module->nowToken->IsSign("}")) {
+            module->ReadAToken();   //吃掉}
+            //std::cout << "Sign:" << module->nowToken->type << std::endl;
+        }
         return make_AST<AST::CodeBlockAST>(module, std::move(codes));
     }
 }

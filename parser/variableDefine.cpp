@@ -4,7 +4,7 @@
 namespace Parser {
     std::unique_ptr<AST::ExprAST> ParserVariableDefine(Module *module) {
         if (module->nowToken->type != token_var) {
-            return module->loger->ParseError("Variable Define", "unexpected call to ParserVariableDefine");
+            return module->loger->ParseError("Variable Define", "unexpected call to ParseVariableDefine");
         }
         auto name = module->ReadAToken();
         if (name->type != token_str) {

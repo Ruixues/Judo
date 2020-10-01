@@ -4,10 +4,10 @@
 
 static wchar_t ReadChar(std::wifstream *file) {
     wchar_t ret;
+    *file >> ret;
     if (file->eof()) {
         return WEOF;
     }
-    *file >> ret;
     return ret;
 }
 
@@ -72,10 +72,12 @@ std::shared_ptr<RToken> RxReader::ReadAToken() {
     std::string ret;
     ret += lastChar;
     if (!isMustSingle(ret)) {
-        while (lastChar != WEOF && lastChar != ' ' && !iswdigit(lastChar)) {
+        while (lastChar != WEOF && !isspace(lastChar) && !iswdigit(lastChar)) {
             ret += lastChar;
             lastChar = ReadChar(fstream);
+
         }
+        std::wcout << "Sign:" << lastChar << std::endl;
     } else {
         lastChar = ReadChar(fstream);
     }

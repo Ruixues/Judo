@@ -2,20 +2,20 @@
 #include "core.h"
 
 llvm::Function *OpHandler::getBinaryOp(std::string opt, llvm::Value *a, llvm::Value *b) {
-    if (opLink.find(a->getType()->getTypeID()) == opLink.end()) {
+    if (opLink.find(typeToStr(a->getType())) == opLink.end()) {
         return module->loger->GetFunctionError("Undefined opt of " + opt);
     }
-    if (opLink[a->getType()->getTypeID()].find(b->getType()->getTypeID()) == opLink[a->getType()->getTypeID()].end()) {
+    if (opLink[typeToStr(a->getType())].find(typeToStr(b->getType())) == opLink[typeToStr(a->getType())].end()) {
         return module->loger->GetFunctionError("Undefined opt of " + opt);
     }
-    if (opLink[a->getType()->getTypeID()][b->getType()->getTypeID()].find(opt) ==
-        opLink[a->getType()->getTypeID()][b->getType()->getTypeID()].end()) {
+    if (opLink[typeToStr(a->getType())][typeToStr(b->getType())].find(opt) ==
+        opLink[typeToStr(a->getType())][typeToStr(b->getType())].end()) {
         return module->loger->GetFunctionError("Undefined opt of " + opt);
     }
-    return opLink[a->getType()->getTypeID()][b->getType()->getTypeID()][opt];
+    return opLink[typeToStr(a->getType())][typeToStr(b->getType())][opt];
 }
 
-bool OpHandler::linkOp(llvm::Type::TypeID a, llvm::Type::TypeID b, std::string opt, llvm::Function *function) {
+bool OpHandler::linkOp(const std::string &a,const std::string &b,const std::string &opt, llvm::Function *function) {
     opLink[a][b][opt] = function;
     return true;
 }
