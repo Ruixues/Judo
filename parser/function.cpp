@@ -161,7 +161,6 @@ namespace Parser {
             case token_if:
                 return ParseIf(module);
         }
-        return nullptr;
     }
 
     std::unique_ptr<AST::FunctionAST> ParseFunction(Module *module) {

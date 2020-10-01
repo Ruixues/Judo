@@ -12,12 +12,6 @@ static wchar_t ReadChar(std::wifstream *file) {
 }
 
 std::shared_ptr<RToken> RxReader::ReadAToken() {
-//    std::string ttt;
-//    for (auto t = ReadChar(fstream);t != WEOF;t = ReadChar(fstream)) {
-//        ttt += t;
-//    }
-//    std::cout << ttt << std::endl;
-//    exit (0);
     if (lastChar == WEOF) {
         return std::make_shared<RToken>(token_eof);
     }
@@ -26,7 +20,7 @@ std::shared_ptr<RToken> RxReader::ReadAToken() {
     while (isspace(lastChar) && !fstream->eof()) {
         lastChar = ReadChar(fstream);
     }
-    if (isalpha(lastChar)) //判断是否是英文字母
+    if (iswalpha(lastChar)) //判断是否是英文字母
     {                      // identifier: [a-zA-Z][a-zA-Z0-9]*
         str = lastChar;
         lastChar = ReadChar(fstream);

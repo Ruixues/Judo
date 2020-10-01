@@ -16,6 +16,11 @@ void Module::Parse() {
         codes.push_back(std::move(tmp));
         token = reader->ReadAToken();
     }
+    //开始编译代码
+    for (auto &line:codes) {
+        line->genCode();
+    }
+    module->print(llvm::errs(), nullptr);
 }
 
 Module::Module(std::string file) : Builder(context) {
@@ -28,6 +33,7 @@ Module::Module(std::string file) : Builder(context) {
     reader = std::make_unique<RxReader>(&(this->file));
     loger = std::make_unique<Log>();
     opHandler = std::make_unique<OpHandler>(this);
+    module = std::make_unique<llvm::Module>("judo", context);
 }
 
 std::unique_ptr<AST::ExprAST> Module::HandleToken(std::shared_ptr<RToken> token) {

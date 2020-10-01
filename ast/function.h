@@ -32,13 +32,7 @@ namespace AST {
             return nullptr;
         }
 
-        llvm::Function *genFunction() {
-            std::vector<llvm::Type *> argTypes;
-            for (auto &arg:args) {
-
-            }
-            return nullptr;
-        }
+        llvm::Function *genFunction();
     };
 
     class FunctionAST : public ExprAST {

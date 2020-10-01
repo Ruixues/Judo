@@ -33,11 +33,13 @@ public:
         }
     }
 
-//    llvm::Type *getType(llvm::LLVMContext &context) {
-//        switch (t) {
-//            case Type_int32
-//                return llvm::Type::getInt32Ty(context)->IntegerTyID;
-//        }
-//        return llvm::Type::getFloatTy(context);
-//    }
+    llvm::Type *getType(llvm::LLVMContext &context) {
+        switch (t) {
+            case Type_int32:
+                return llvm::Type::getInt32Ty(context);
+            case Type_void:
+                return llvm::Type::getVoidTy(context);
+        }
+        return llvm::Type::getFloatTy(context);
+    }
 };
