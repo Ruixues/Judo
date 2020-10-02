@@ -13,6 +13,20 @@ void Module::Parse() {
         tmp->genCode();
     }
     module->print(llvm::errs(), nullptr);
+    auto main = getFunction("main");
+    if (main) {
+        //那就可以开始跑main函数了
+        auto H = core->JIT->addModule(std::move(module));
+        core->InitializeModuleAndPassManager();
+        auto mainSymbol = core->JIT->findSymbol("main");
+        if (mainSymbol) {
+            void (*FP)() = (void (*)())(intptr_t)cantFail(mainSymbol.getAddress());
+            FP ();
+        } else {
+            return ;
+        }
+        core->JIT->removeModule(H);
+    }
 }
 
 Module::Module(std::string file,Judo* core) : Builder(core->context),core (core) {
@@ -75,4 +89,13 @@ void Judo::InitializeModuleAndPassManager(void) {
     FPM->add(llvm::createGVNPass());
     FPM->add(llvm::createCFGSimplificationPass());
     FPM->doInitialization();
+}
+llvm::Function *Module::getFunction(std::string Name) {
+    if (auto *F = module->getFunction(Name))    //module内还没有
+        return F;
+    //查看是否已经定义了
+    auto FI = FunctionProto.find(Name);
+    if (FI != FunctionProto.end())
+        return FI->second->genFunction();
+    return nullptr;
 }

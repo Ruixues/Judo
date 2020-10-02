@@ -6,10 +6,10 @@ namespace AST {
     llvm::Function *FunctionProto::genFunction() {
         std::vector<llvm::Type *> argTypes;
         for (auto &arg:args) {
-            argTypes.push_back(arg->type.getType(module->context));
+            argTypes.push_back(arg->type.getType(module->core->context));
         }
         llvm::FunctionType *FT =
-                llvm::FunctionType::get(returnType.getType(module->context), argTypes, false);
+                llvm::FunctionType::get(returnType.getType(module->core->context), argTypes, false);
         llvm::Function *F =
                 llvm::Function::Create(FT, llvm::Function::ExternalLinkage, name, module->module.get());
         size_t index = 0;
@@ -20,9 +20,11 @@ namespace AST {
     }
 
     llvm::Value *FunctionAST::genCode() {
-        auto f = module->module->getFunction(proto->name);
+        auto &P = *proto;
+        module->FunctionProto [proto->name] = std::move (proto);
+        auto f = module->module->getFunction(P.name);
         if (!f) {
-            f = proto->genFunction();
+            f = P.genFunction();
         }
         if (!f) {
             return nullptr;
@@ -30,7 +32,7 @@ namespace AST {
         if (!f->empty()) {
             return (llvm::Function *) module->loger->GenCodeError("Function cannot be redefined.");
         }
-        auto BB = llvm::BasicBlock::Create(module->context, "entry", f);
+        auto BB = llvm::BasicBlock::Create(module->core->context, "entry", f);
         module->Builder.SetInsertPoint(BB);
         //开始进入新的作用域，应当改变部分变量的引用
         for (auto &arg:f->args()) {

@@ -4,7 +4,7 @@
 namespace AST {
     namespace Const {
         llvm::Value *TDouble::genCode() {
-            return llvm::ConstantFP::get(module->context, llvm::APFloat(data));
+            return llvm::ConstantFP::get(module->core->context, llvm::APFloat(data));
         }
     }
 }

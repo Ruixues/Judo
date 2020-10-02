@@ -7,8 +7,8 @@
 #include "reader.h"
 #include "loger.h"
 #include "opHandler.h"
+#include "jit/jit.h"
 //每个文件都是一个module.
-class RJIT; //加快编译速度
 class Judo;
 class Module {
 private:
@@ -19,6 +19,8 @@ public:
     std::shared_ptr<RToken> nowToken;
     llvm::IRBuilder<> Builder;
     std::unique_ptr<llvm::Module> module;
+    llvm::Function *getFunction(std::string Name);
+    std::map<std::string,std::unique_ptr<AST::FunctionProto>> FunctionProto;
     std::map<std::string, llvm::Value *> namedValues;
     std::unique_ptr<OpHandler> opHandler;
     Module(std::string file,Judo* core);
