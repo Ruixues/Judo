@@ -75,9 +75,7 @@ std::shared_ptr<RToken> RxReader::ReadAToken() {
         while (lastChar != WEOF && !isspace(lastChar) && !iswdigit(lastChar)) {
             ret += lastChar;
             lastChar = ReadChar(fstream);
-
         }
-        std::wcout << "Sign:" << lastChar << std::endl;
     } else {
         lastChar = ReadChar(fstream);
     }

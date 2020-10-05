@@ -4,7 +4,7 @@
 namespace AST {
 
     llvm::Value *FunctionCall::genCode() {
-        auto f = module->module->getFunction(functionName);
+        auto f = module->getFunction(functionName);
         if (!f) {
             return module->loger->GenCodeError("undefined function:" + functionName);
         }

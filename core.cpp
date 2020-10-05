@@ -10,6 +10,7 @@ void Module::Parse() {
             break;
         }
         auto tmp = HandleToken(nowToken);
+        //std::cout << (tmp == nullptr) << std::endl;
         tmp->genCode();
     }
     module->print(llvm::errs(), nullptr);
@@ -52,8 +53,7 @@ std::unique_ptr<AST::ExprAST> Module::HandleToken(std::shared_ptr<RToken> token)
         case token_str:
             return Parser::ParseIdentifierExpr(this);
         case token_extern:
-            Parser::ParseExtern(this);
-            return nullptr;
+            return Parser::ParseExtern(this);
         case token_sign:
             if (token->IsSign("{")) {   //代码块
                 return Parser::ParseCodeBlock(this);
@@ -61,9 +61,8 @@ std::unique_ptr<AST::ExprAST> Module::HandleToken(std::shared_ptr<RToken> token)
             break;
         case token_var:
             return Parser::ParserVariableDefine(this);
-        default:
-            return loger->ParseError("Core", "unexpected token type");
     }
+    return loger->ParseError("Core", "unexpected token type");
 }
 Judo::Judo(std::string EnterFile) {
     static bool inited = false;
@@ -73,17 +72,17 @@ Judo::Judo(std::string EnterFile) {
         llvm::InitializeNativeTargetAsmParser();
         inited = true;
     }
-    mainModule = new Module(EnterFile,this);
-    modules[EnterFile] = std::shared_ptr<Module>(mainModule);
     JIT = std::make_unique<RJIT>();
     InitializeModuleAndPassManager();
+    mainModule = new Module(EnterFile,this);
+    modules[EnterFile] = std::shared_ptr<Module>(mainModule);
     // 准备开始解析模块
     mainModule->Parse();
 }
-void Judo::InitializeModuleAndPassManager(void) {
+void Judo::InitializeModuleAndPassManager() {
     auto module = std::make_unique<llvm::Module>("RJIT", context);
-    module->setDataLayout(JIT->getTargetMachine().createDataLayout());
-    this->FPM = std::make_unique<llvm::legacy::FunctionPassManager>(module.get());
+    FPM = std::make_unique<llvm::legacy::FunctionPassManager>(module.get());
+    //module->setDataLayout(JIT->getTargetMachine().createDataLayout());
     FPM->add(llvm::createInstructionCombiningPass());
     FPM->add(llvm::createReassociatePass());
     FPM->add(llvm::createGVNPass());

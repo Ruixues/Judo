@@ -1,6 +1,6 @@
 #include "add.h"
 #include "../core.h"
-
+#include <iostream>
 void bindAdd(Module *module) {
     const std::string as[] = {"Int32", "Double", "Double", "Int32"};
     const std::string bs[] = {"Int32", "Double", "Int32", "Double"};
@@ -27,4 +27,8 @@ extern "C" DLLEXPORT double addDoubleInt32(double a, int32 b) {
 }
 extern "C" DLLEXPORT double addInt32Double(int32 a, double b) {
     return a + b;
+}
+extern "C" DLLEXPORT void test() {
+    std::cout << "Hello world!" << std::endl;
+    return ;
 }
