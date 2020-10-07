@@ -11,9 +11,9 @@ func FunctionName (Name1 Type1,Name2 Type2) (RetName RetType)
 RetName为可选的字段。函数将把下一条语句作为函数的内容。
 
 定义一个变量  
-var VariableName Type  
+var VariableName:Type  
 或者  
-var VariableName Type = Value  
+var VariableName:Type = Value  
 类型必须显式指定
 
 对于If语句，有两种形式

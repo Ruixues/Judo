@@ -5,11 +5,11 @@
 #include "../ast/function.h"
 #include <memory>
 #include <vector>
-#include "../ast/variableDefine.h"
+#include "../ast/variable.h"
 #include "const/number.h"
 #include "codeBlock.h"
 #include "if.h"
-
+#include "variableDefine.h"
 namespace Parser {
     std::unique_ptr<AST::FunctionProto> ParseFunctionProto(Module *module) {
         if (module->nowToken->type != token_str) {
@@ -150,6 +150,8 @@ namespace Parser {
                 return ParseIdentifierExpr(module);   //可能是变量，也可能是函数调用
             case token_int:
                 return ParseNumber(module);
+            case token_var:
+                return ParserVariableDefine(module);
             case token_eof:
                 return nullptr;
             case token_sign: {

@@ -21,7 +21,7 @@ namespace AST {
 
     llvm::Value *FunctionAST::genCode() {
         auto &P = *proto;
-        module->FunctionProto [proto->name] = std::move (proto);
+        module->FunctionProto[proto->name] = std::move(proto);
         auto f = module->module->getFunction(P.name);
         if (!f) {
             f = P.genFunction();
@@ -36,10 +36,12 @@ namespace AST {
         module->Builder.SetInsertPoint(BB);
         //开始进入新的作用域，应当改变部分变量的引用
         for (auto &arg:f->args()) {
-            module->namedValues[arg.getName()] = &arg;
+            llvm::AllocaInst *Alloca = module->CreateAlloca(f, arg.getName(), arg.getType());
+            module->Builder.CreateStore(&arg, Alloca);   //储存参数到变量中
+            module->SetNamedValue(arg.getName(), Alloca);
         }
         defer (for (auto &arg:f->args()) {
-            module->namedValues.erase(arg.getName());
+            module->EraseValue(arg.getName());
         });
         if (code->genCode()) {
             //开始判断当前位置，是否已经创建了return语句

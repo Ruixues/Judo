@@ -14,20 +14,23 @@ namespace Parser {
         auto token = module->ReadAToken();
         if (!token->IsSign(":")) {
             return module->loger->ParseError("Variable Define",
-                                             "expect to get the type of the variable after the name of it");
+                                             "need : to separate the type and name");
         }
         //开始获取类型
         auto type = module->ReadAToken();
-        if (token->type != token_str) {
+        if (type->type != token_str) {
             return module->loger->ParseError("Variable Define",
                                              "expect to get the type of the variable after the name of it");
         }
         token = module->ReadAToken();
         if (!token->IsSign("=")) {  //那就是没有默认值
-            return std::make_unique<AST::VariableDefine>(name->GetStr(), nullptr, JudoType(type->GetStr()));
+            return make_AST<AST::VariableDefine>(module,name->GetStr(), nullptr, JudoType(type->GetStr()));
         }
         //否则那就解析
+        token = module->ReadAToken();   //吃掉=
         auto initialValue = ParsePrimary(module);
-        return std::make_unique<AST::VariableDefine>(name->GetStr(), std::move(initialValue), JudoType(type->GetStr()));
+        if (!initialValue) return nullptr;
+        auto t = make_AST<AST::VariableDefine>(module,name->GetStr(), std::move(initialValue), JudoType(type->GetStr()));
+        return t;
     }
 }

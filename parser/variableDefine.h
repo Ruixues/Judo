@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../ast/AST.h"
-#include "../ast/variableDefine.h"
+#include "../ast/variable.h"
 #include "../core.h"
 
 namespace Parser {

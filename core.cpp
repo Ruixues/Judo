@@ -2,6 +2,7 @@
 #include "parser/parser.h"
 #include "builtIn/builtIn.h"
 #include "jit/jit.h"
+#include <queue>
 void Module::Parse() {
     // 开始解析
     ReadAToken();
@@ -10,7 +11,6 @@ void Module::Parse() {
             break;
         }
         auto tmp = HandleToken(nowToken);
-        //std::cout << (tmp == nullptr) << std::endl;
         tmp->genCode();
     }
     module->print(llvm::errs(), nullptr);
@@ -21,16 +21,16 @@ void Module::Parse() {
         core->InitializeModuleAndPassManager();
         auto mainSymbol = core->JIT->findSymbol("main");
         if (mainSymbol) {
-            void (*FP)() = (void (*)())(intptr_t)cantFail(mainSymbol.getAddress());
-            FP ();
+            void (*FP)() = (void (*)()) (intptr_t) cantFail(mainSymbol.getAddress());
+            FP();
         } else {
-            return ;
+            return;
         }
         core->JIT->removeModule(H);
     }
 }
 
-Module::Module(std::string file,Judo* core) : Builder(core->context),core (core) {
+Module::Module(std::string file, Judo *core) : Builder(core->context), core(core) {
     this->file.open(file, std::ios::in);
     if (!this->file.good()) {
         std::cout << "Open Module " << file << " Error" << std::endl;
@@ -41,7 +41,7 @@ Module::Module(std::string file,Judo* core) : Builder(core->context),core (core)
     loger = std::make_unique<Log>();
     opHandler = std::make_unique<OpHandler>(this);
     module = std::make_unique<llvm::Module>(file, core->context);
-    llvm::ConstantFP::get(core->context,llvm::APFloat(1.0));
+    llvm::ConstantFP::get(core->context, llvm::APFloat(1.0));
     BindAllBuiltIn(this);
 }
 
@@ -64,6 +64,7 @@ std::unique_ptr<AST::ExprAST> Module::HandleToken(std::shared_ptr<RToken> token)
     }
     return loger->ParseError("Core", "unexpected token type");
 }
+
 Judo::Judo(std::string EnterFile) {
     static bool inited = false;
     if (!inited) {
@@ -74,21 +75,25 @@ Judo::Judo(std::string EnterFile) {
     }
     JIT = std::make_unique<RJIT>();
     InitializeModuleAndPassManager();
-    mainModule = new Module(EnterFile,this);
+    mainModule = new Module(EnterFile, this);
     modules[EnterFile] = std::shared_ptr<Module>(mainModule);
     // 准备开始解析模块
     mainModule->Parse();
 }
+
 void Judo::InitializeModuleAndPassManager() {
     auto module = std::make_unique<llvm::Module>("RJIT", context);
     FPM = std::make_unique<llvm::legacy::FunctionPassManager>(module.get());
-    //module->setDataLayout(JIT->getTargetMachine().createDataLayout());
+    module->setDataLayout(JIT->getTargetMachine().createDataLayout());
     FPM->add(llvm::createInstructionCombiningPass());
     FPM->add(llvm::createReassociatePass());
     FPM->add(llvm::createGVNPass());
     FPM->add(llvm::createCFGSimplificationPass());
     FPM->doInitialization();
+    FPM->add(llvm::createInstructionCombiningPass());
+    FPM->add(llvm::createReassociatePass());
 }
+
 llvm::Function *Module::getFunction(std::string Name) {
     if (auto *F = module->getFunction(Name))    //module内还没有
         return F;
@@ -97,4 +102,34 @@ llvm::Function *Module::getFunction(std::string Name) {
     if (FI != FunctionProto.end())
         return FI->second->genFunction();
     return nullptr;
+}
+
+llvm::AllocaInst *Module::CreateAlloca(llvm::Function *Function,
+                                       const std::string &Name, llvm::Type *type) {
+    llvm::IRBuilder<> tmp(&Function->getEntryBlock(),
+                          Function->getEntryBlock().begin());
+    return tmp.CreateAlloca(type, 0, Name.c_str());
+}
+
+llvm::AllocaInst *Module::GetNamedValue(const std::string &Name) {
+    auto v = namedValues.find(Name);
+    if (v == namedValues.end()) {
+        return nullptr;
+    }
+    return v->second.front();
+}
+
+void Module::SetNamedValue(const std::string &Name, llvm::AllocaInst *Value) {
+    if (namedValues.find(Name) == namedValues.end()) {
+        namedValues [Name] = std::queue<llvm::AllocaInst *>();
+    }
+    namedValues[Name].push(Value);
+}
+
+void Module::EraseValue(const std::string &Name) {
+    auto v = namedValues.find(Name);
+    if (v == namedValues.end()) {
+        return;
+    }
+    v->second.pop();
 }

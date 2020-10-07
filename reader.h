@@ -32,12 +32,13 @@ enum Token {
     token_double = 9,
     token_int = 10,
     token_sign = 11,
+    token_string = 12,
 };
 
 #include <iostream>
 
 static bool isMustSingle(std::string str) {
-    static std::set<std::string> t = {"{", "}", "(", ")", "+", "-", "*", "/", "%", ":", ";"};
+    static std::set<std::string> t = {"{", "}", "(", ")", "+", "-", "*", "/", "%", ":", ";" , "="};
     return t.find(str) != t.end();
 }
 

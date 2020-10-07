@@ -4,7 +4,6 @@
 #include "../llvmInclude.h"
 
 
-
 class Module;
 
 void bindAdd(Module *module);

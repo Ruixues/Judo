@@ -7,6 +7,6 @@ namespace Parser {
         }
         auto num = module->nowToken->GetInt64();
         module->ReadAToken();   //吃掉数字
-        return make_AST<AST::Const::TInt32>(module,int32(num));
+        return make_AST<AST::Const::TInt32>(module, int32(num));
     }
 }

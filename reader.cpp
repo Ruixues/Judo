@@ -47,7 +47,29 @@ std::shared_ptr<RToken> RxReader::ReadAToken() {
     /*
         TODO : 实现输入字符串
     */
-    if (lastChar == '\"') { //是字符串
+    if (lastChar == L'\"') { //是字符串
+        //开始读取字符串
+        bool turn = false;  //下一个字符是否转义
+        std::string ret = "";
+        bool normalReturn = false;
+        while (iswdigit(lastChar)) {
+            lastChar = ReadChar(fstream);
+            if (turn) {
+                ret += lastChar;
+                turn = false;
+            } else if (lastChar == '\\') {  //转义
+                turn = true;
+            } else if (lastChar == '"') {
+                //字符串结束
+                normalReturn = true;
+                break;
+            }
+        }
+        if (!normalReturn) {
+            return nullptr;
+        }
+        return std::make_shared<RToken>(token_string, ret);
+
     }
     if (iswdigit(lastChar) || lastChar == '.') //如果是数字
     {                                          // Number: [0-9.]+

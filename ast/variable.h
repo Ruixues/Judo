@@ -10,10 +10,8 @@ namespace AST {
         std::string name;
     public:
         VariableExpr(const std::string &name) : name(name) {}
-
-        llvm::Value *genCode() {
-            return nullptr;
-        }
+        std::string GetName () {return name;}
+        llvm::Value *genCode();
     };
 
     class VariableDefine : public ExprAST {
@@ -27,8 +25,6 @@ namespace AST {
                                                                                                          value)),
                                                                                                  type(type) {}
 
-        llvm::Value *genCode() {
-            return nullptr;
-        }
+        llvm::Value *genCode();
     };
 }

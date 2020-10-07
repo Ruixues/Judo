@@ -34,6 +34,6 @@ namespace Parser {
                 return nullptr;
             }
         }
-        return std::make_unique<AST::If>(std::move(init), std::move(condition), std::move(then), std::move(relse));
+        return make_AST<AST::If>(module,std::move(init), std::move(condition), std::move(then), std::move(relse));
     }
 }
