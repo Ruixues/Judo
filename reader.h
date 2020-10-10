@@ -38,7 +38,7 @@ enum Token {
 #include <iostream>
 
 static bool isMustSingle(std::string str) {
-    static std::set<std::string> t = {"{", "}", "(", ")", "+", "-", "*", "/", "%", ":", ";" , "="};
+    static std::set<std::string> t = {"{", "}", "(", ")", "+", "-", "*", "/", "%", ":", ";", "="};
     return t.find(str) != t.end();
 }
 

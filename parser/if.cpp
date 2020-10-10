@@ -27,13 +27,13 @@ namespace Parser {
         }
         //判断有没有else
         if (module->nowToken->type == token_else) {
-            //那就开始解析语句
             module->ReadAToken();   //吃掉else
             relse = ParseExpression(module);
             if (!relse) {
                 return nullptr;
             }
         }
-        return make_AST<AST::If>(module,std::move(init), std::move(condition), std::move(then), std::move(relse));
+        //return make_AST<AST::If>(module,(init != nullptr)?std::move(init):nullptr, (condition != nullptr)?std::move(condition):nullptr, (then != nullptr)?std::move(then): nullptr, (relse != nullptr)?std::move(relse): nullptr);
+        return make_AST<AST::If>(module, std::move(init), std::move(condition), std::move(then), std::move(relse));
     }
 }

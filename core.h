@@ -9,6 +9,7 @@
 #include "opHandler.h"
 #include "jit/jit.h"
 #include <queue>
+#include <stack>
 
 //每个文件都是一个module.
 class Judo;
@@ -17,6 +18,7 @@ class Module {
 private:
     std::wifstream file;
     std::unique_ptr<RxReader> reader;
+    std::stack<std::vector<std::string>> ScopeVariables;  //记录当前作用域的变量
 public:
     std::unique_ptr<Log> loger;
     std::shared_ptr<RToken> nowToken;
@@ -25,8 +27,10 @@ public:
 
     llvm::Function *getFunction(std::string Name);
 
+    void EnterScope();  //进入作用域
+    void ExitScope();  //退出作用域
     std::map<std::string, std::unique_ptr<AST::FunctionProto>> FunctionProto;
-    std::map<std::string, std::queue<llvm::AllocaInst *>> namedValues;
+    std::map<std::string, std::stack<llvm::AllocaInst *>> namedValues;
     std::unique_ptr<OpHandler> opHandler;
 
     Module(std::string file, Judo *core);

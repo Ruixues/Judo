@@ -3,6 +3,7 @@
 #include "builtIn/builtIn.h"
 #include "jit/jit.h"
 #include <queue>
+
 void Module::Parse() {
     // 开始解析
     ReadAToken();
@@ -116,12 +117,12 @@ llvm::AllocaInst *Module::GetNamedValue(const std::string &Name) {
     if (v == namedValues.end()) {
         return nullptr;
     }
-    return v->second.front();
+    return v->second.top();
 }
 
 void Module::SetNamedValue(const std::string &Name, llvm::AllocaInst *Value) {
     if (namedValues.find(Name) == namedValues.end()) {
-        namedValues [Name] = std::queue<llvm::AllocaInst *>();
+        namedValues[Name] = std::stack<llvm::AllocaInst *>();
     }
     namedValues[Name].push(Value);
 }
@@ -132,4 +133,17 @@ void Module::EraseValue(const std::string &Name) {
         return;
     }
     v->second.pop();
+}
+
+void Module::EnterScope() {
+    //进入新的作用域
+    ScopeVariables.push(std::vector<std::string>());
+}
+
+void Module::ExitScope() {
+    auto now = ScopeVariables.top();
+    for (auto &name:now) {
+        EraseValue(name);
+    }
+    ScopeVariables.pop();
 }

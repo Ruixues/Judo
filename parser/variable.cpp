@@ -12,25 +12,32 @@ namespace Parser {
         }
         //开始获取类型
         auto token = module->ReadAToken();
-        if (!token->IsSign(":")) {
-            return module->loger->ParseError("Variable Define",
-                                             "need : to separate the type and name");
-        }
-        //开始获取类型
-        auto type = module->ReadAToken();
-        if (type->type != token_str) {
-            return module->loger->ParseError("Variable Define",
-                                             "expect to get the type of the variable after the name of it");
+        std::shared_ptr<RToken> type;
+        if (token->IsSign(":")) {
+            //那就是指定了类型
+            type = module->ReadAToken();    //吃掉了:
+            if (type->type != token_str) {
+                return module->loger->ParseError("Variable Define",
+                                                 "expect to get the type of the variable after ':'");
+            }
         }
         token = module->ReadAToken();
         if (!token->IsSign("=")) {  //那就是没有默认值
-            return make_AST<AST::VariableDefine>(module,name->GetStr(), nullptr, JudoType(type->GetStr()));
+            if (!type) {
+                //没有默认值，又没有名称，那就不可能推断类型
+                return module->loger->ParseError("Variable Define",
+                                                 "expect the type of variable or the initial value");
+            }
+            return make_AST<AST::VariableDefine>(module, name->GetStr(), nullptr, JudoType(type->GetStr()));
         }
-        //否则那就解析
-        token = module->ReadAToken();   //吃掉=
-        auto initialValue = ParsePrimary(module);
+        //有默认值
+        module->ReadAToken();   //吃掉=
+        auto initialValue = ParsePrimary(module);   //获取初始值
         if (!initialValue) return nullptr;
-        auto t = make_AST<AST::VariableDefine>(module,name->GetStr(), std::move(initialValue), JudoType(type->GetStr()));
-        return t;
+        if (!type) {
+            return make_AST<AST::VariableDefine>(module, name->GetStr(), std::move(initialValue),
+                                                 JudoType(Type_Undefined));
+        }
+        return make_AST<AST::VariableDefine>(module, name->GetStr(), std::move(initialValue), JudoType(type->GetStr()));
     }
 }

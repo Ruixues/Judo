@@ -12,12 +12,22 @@ namespace AST {
 
     llvm::Value *VariableDefine::genCode() {
         //生成一个变量
-        auto v = module->CreateAlloca(module->Builder.GetInsertBlock()->getParent(), name,
-                                      type.getType(module->core->context));
+        llvm::AllocaInst *v;
+        llvm::Value *initV;
         if (value) {
-            auto initV = value->genCode();
+            initV = value->genCode();
             if (!initV) return nullptr;
-            module->Builder.CreateStore(initV,v);
+        }
+        if (type.isType(Type_Undefined)) {
+            //需要自己生成类型
+            v = module->CreateAlloca(module->Builder.GetInsertBlock()->getParent(), name,
+                                     initV->getType());
+        } else {
+            v = module->CreateAlloca(module->Builder.GetInsertBlock()->getParent(), name,
+                                     type.getType(module->core->context));
+        }
+        if (initV) {
+            module->Builder.CreateStore(initV, v);
         }
         module->SetNamedValue(name, v);
         return module->Builder.CreateLoad(v, name);

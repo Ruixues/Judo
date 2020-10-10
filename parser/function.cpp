@@ -10,6 +10,7 @@
 #include "codeBlock.h"
 #include "if.h"
 #include "variableDefine.h"
+
 namespace Parser {
     std::unique_ptr<AST::FunctionProto> ParseFunctionProto(Module *module) {
         if (module->nowToken->type != token_str) {
@@ -54,6 +55,7 @@ namespace Parser {
             if (token2->GetSign() != ")") {
                 return module->loger->FunctionProtoParseError("There must be a ) after the Type of Return");
             }
+            module->ReadAToken();   //吃掉)
             return make_AST<AST::FunctionProto>(module, FunctionName, std::move(args), "",
                                                 JudoType(token->GetStr()));
         }

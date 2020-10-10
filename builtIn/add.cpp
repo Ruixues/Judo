@@ -2,6 +2,7 @@
 #include "../core.h"
 #include <iostream>
 #include "../type.h"
+
 void bindAdd(Module *module) {
     const std::string as[] = {"Int32", "Double", "Double", "Int32"};
     const std::string bs[] = {"Int32", "Double", "Int32", "Double"};
@@ -30,7 +31,7 @@ extern "C" DLLEXPORT double addDoubleInt32(double a, int32 b) {
 extern "C" DLLEXPORT double addInt32Double(int32 a, double b) {
     return a + b;
 }
-extern "C" DLLEXPORT void test(int32 v) {
+extern "C" DLLEXPORT int test(int32 v) {
     std::cout << "v:" << v << std::endl;
-    return;
+    return 0;
 }

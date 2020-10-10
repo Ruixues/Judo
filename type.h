@@ -11,15 +11,20 @@ enum BuildinType {
     Type_int32 = 1,
     Type_double = 2,
     Type_void = 3,
+    Type_Undefined = 4,
 };
 
 class JudoType {
 private:
-    BuildinType t;
+    BuildinType t = Type_Undefined;
     std::string CustomTypeName;
 public:
     // 暂时没有加入自定义类型
     JudoType(BuildinType Type) : t(Type) {}
+
+    bool isType(BuildinType Type) {
+        return t == Type;
+    }
 
     JudoType(std::string TypeName) {
         if (TypeName == "int32") {

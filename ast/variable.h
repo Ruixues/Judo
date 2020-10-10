@@ -10,7 +10,9 @@ namespace AST {
         std::string name;
     public:
         VariableExpr(const std::string &name) : name(name) {}
-        std::string GetName () {return name;}
+
+        std::string GetName() { return name; }
+
         llvm::Value *genCode();
     };
 
