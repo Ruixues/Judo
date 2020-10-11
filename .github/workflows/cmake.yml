@@ -38,3 +38,7 @@ jobs:
       shell: bash
       # Execute the build.  You can specify a specific target with "--target <NAME>"
       run: cmake --build . --config $BUILD_TYPE
+    - name: Upload
+      uses: actions/upload-artifact@v2
+      path: ${{runner.workspace}}/build/main.exe
+      
