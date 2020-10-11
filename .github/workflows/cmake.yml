@@ -30,9 +30,8 @@ jobs:
       # access regardless of the host operating system
       shell: bash
       working-directory: ${{runner.workspace}}/build
-      run: |
-              echo $GITHUB_WORKSPACE
-              cmake $GITHUB_WORKSPACE/../ -DCMAKE_BUILD_TYPE=$BUILD_TYPE -G "Ninja"
+      run: 
+            cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -G "Ninja"
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
