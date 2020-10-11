@@ -40,5 +40,7 @@ jobs:
       run: cmake --build . --config $BUILD_TYPE
     - name: Upload
       uses: actions/upload-artifact@v2
-      path: ${{runner.workspace}}/build/main.exe
+      with:
+        name: judo.exe
+        path: ${{runner.workspace}}/build/main.exe
       
