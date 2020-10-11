@@ -8,4 +8,5 @@
 #include "const/number.h"
 #include "if.h"
 #include "extern.h"
+#include "for.h"
 #include <memory>

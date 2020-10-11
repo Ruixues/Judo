@@ -26,11 +26,7 @@ namespace AST {
             module->Builder.CreateStore(variable, val);
             return val;
         }
-        auto f = module->opHandler->getBinaryOp(opt, ll, rr);
-        if (!f) {
-            return nullptr;
-        }
-        llvm::Value *Ops[2] = {ll, rr};
-        return module->Builder.CreateCall(f, Ops, "binaryOp");
+        auto v = module->opHandler->getBinaryOp(opt, ll, rr);
+        return v;
     }
 }

@@ -33,6 +33,7 @@ enum Token {
     token_int = 10,
     token_sign = 11,
     token_string = 12,
+    token_for = 13,
 };
 
 #include <iostream>

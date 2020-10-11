@@ -20,6 +20,8 @@ private:
     std::unique_ptr<RxReader> reader;
     std::stack<std::vector<std::string>> ScopeVariables;  //记录当前作用域的变量
 public:
+    std::stack<llvm::BasicBlock*> ForThenBlock;    //记录当前处于的for作用域的下一个块,帮助实现continue,for等东西
+    std::stack<llvm::BasicBlock*> NowForBlock;  //当前循环体的判断体
     std::unique_ptr<Log> loger;
     std::shared_ptr<RToken> nowToken;
     llvm::IRBuilder<> Builder;

@@ -90,9 +90,9 @@ void Judo::InitializeModuleAndPassManager() {
     FPM->add(llvm::createReassociatePass());
     FPM->add(llvm::createGVNPass());
     FPM->add(llvm::createCFGSimplificationPass());
-    FPM->doInitialization();
     FPM->add(llvm::createInstructionCombiningPass());
     FPM->add(llvm::createReassociatePass());
+    FPM->doInitialization();
 }
 
 llvm::Function *Module::getFunction(std::string Name) {

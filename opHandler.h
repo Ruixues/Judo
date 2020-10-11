@@ -6,7 +6,7 @@
 
 //用来获取运算符处理函数的
 class Module;
-
+typedef std::function<llvm::Value* (Module*,llvm::Value*,llvm::Value*)> GetOptFunc;
 class OpHandler {
 private:
 public:
@@ -31,10 +31,10 @@ public:
         }
     }
 
-    std::map<std::string, std::map<std::string, std::map<std::string, llvm::Function *>>> opLink;
+    std::map<std::string, std::map<std::string, std::map<std::string, GetOptFunc>>> opLink;
 
     // 获取二元操作符的对应函数
-    llvm::Function *getBinaryOp(std::string opt, llvm::Value *a, llvm::Value *b);
+    llvm::Value *getBinaryOp(std::string opt, llvm::Value *a, llvm::Value *b);
 
-    bool linkOp(const std::string &a, const std::string &b, const std::string &opt, llvm::Function *function);
+    bool linkOp(const std::string &a, const std::string &b, const std::string &opt, GetOptFunc function);
 };

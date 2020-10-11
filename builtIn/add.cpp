@@ -2,15 +2,14 @@
 #include "../core.h"
 #include <iostream>
 #include "../type.h"
-
+llvm::Value* int32Int32Add (Module* module,llvm::Value* a,llvm::Value* b);
 void bindAdd(Module *module) {
-    const std::string as[] = {"Int32", "Double", "Double", "Int32"};
-    const std::string bs[] = {"Int32", "Double", "Int32", "Double"};
-    size_t len = sizeof(as) / sizeof(as[1]);
-    for (size_t i = 0; i < len; ++i) {
-        module->opHandler->linkOp(as[i], bs[i], "+", module->module->getFunction("add" + as[i] + bs[i]));
-    }
+    module->opHandler->linkOp("Int32","Int32","+",int32Int32Add);
     return;
+}
+
+llvm::Value* int32Int32Add (Module* module,llvm::Value* a,llvm::Value* b) {
+    return module->Builder.CreateAdd(a,b);
 }
 
 #ifdef _WIN32
@@ -19,18 +18,6 @@ void bindAdd(Module *module) {
 #define DLLEXPORT
 #endif
 
-extern "C" DLLEXPORT double addDoubleDouble(double a, double b) {
-    return a + b;
-}
-extern "C" DLLEXPORT double addInt32Int32(int32 a, int32 b) {
-    return a + b;
-}
-extern "C" DLLEXPORT double addDoubleInt32(double a, int32 b) {
-    return a + b;
-}
-extern "C" DLLEXPORT double addInt32Double(int32 a, double b) {
-    return a + b;
-}
 extern "C" DLLEXPORT int test(int32 v) {
     std::cout << "v:" << v << std::endl;
     return 0;
