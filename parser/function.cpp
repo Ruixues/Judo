@@ -11,6 +11,7 @@
 #include "if.h"
 #include "variableDefine.h"
 #include "for.h"
+#include "break.h"
 namespace Parser {
     std::unique_ptr<AST::FunctionProto> ParseFunctionProto(Module *module) {
         if (module->nowToken->type != token_str) {
@@ -168,6 +169,10 @@ namespace Parser {
                 return ParseFor(module);
             case token_if:
                 return ParseIf(module);
+            case token_break:
+                return ParseBreak(module);
+            case token_continue:
+                return ParseContinue(module);
         }
     }
 

@@ -4,7 +4,6 @@
 #include "AST.h"
 #include <memory>
 #include <map>
-#include <iostream>
 
 namespace AST {
     extern std::map<std::string, int> BinopPrecedence;

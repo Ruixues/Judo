@@ -34,6 +34,8 @@ enum Token {
     token_sign = 11,
     token_string = 12,
     token_for = 13,
+    token_break = 14,
+    token_continue = 15,
 };
 
 #include <iostream>
