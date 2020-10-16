@@ -136,7 +136,7 @@ namespace Parser {
                 if (!module->nowToken->IsSign(",")) {
                     return module->loger->ParseError("Function Call", "Expected ')' or ',' in argument list");
                 }
-                module->ReadAToken();
+                module->ReadAToken();   //吃掉分隔符
             }
         }
         module->ReadAToken();   //吃掉)

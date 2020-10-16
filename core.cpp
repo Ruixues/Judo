@@ -63,7 +63,7 @@ std::unique_ptr<AST::ExprAST> Module::HandleToken(std::shared_ptr<RToken> token)
         case token_var:
             return Parser::ParserVariableDefine(this);
     }
-    return loger->ParseError("Core", "unexpected token type");
+    return loger->ParseError("Core", "unexpected token type:" + std::to_string(token->type));
 }
 
 Judo::Judo(std::string EnterFile) {
@@ -141,6 +141,7 @@ void Module::EnterScope() {
 }
 
 void Module::ExitScope() {
+    if (ScopeVariables.empty()) return ;
     auto now = ScopeVariables.top();
     for (auto &name:now) {
         EraseValue(name);

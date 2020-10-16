@@ -23,7 +23,7 @@ namespace AST {
                 return module->loger->GenCodeError("Unknown variable name");
             }
             //那就开始赋值
-            module->Builder.CreateStore(variable, val);
+            module->Builder.CreateStore(val,variable);
             return val;
         }
         auto v = module->opHandler->getBinaryOp(opt, ll, rr);

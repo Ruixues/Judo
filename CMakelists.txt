@@ -1,19 +1,29 @@
+set(CMAKE_CXX_STANDARD 14)
 cmake_minimum_required(VERSION 3.1)
 
 # 项目信息
 
-SET(CMAKE_C_COMPILER clang)
-SET(CMAKE_CXX_COMPILER clang++)
+#SET(CMAKE_C_COMPILER clang)
+#SET(CMAKE_CXX_COMPILER clang++)
+#SET(CMAKE_C_COMPILER gcc)
+#SET(CMAKE_CXX_COMPILER g++)
 project(Judo)
-#set(CMAKE_VERBOSE_MAKEFILE on)
+set(CMAKE_VERBOSE_MAKEFILE on)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(LLVM REQUIRED CONFIG)
 message(STATUS "include path: ${LLVM_INCLUDE_DIRS}")
 include_directories(${LLVM_INCLUDE_DIRS})
 add_definitions(${LLVM_DEFINITIONS})
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 `llvm-config --cxxflags --ldflags --system-libs --libs core mcjit native orcjit`")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+
+IF (CMAKE_SYSTEM_NAME MATCHES "Windows")
+    MESSAGE(STATUS "current platform: Windows")
+    add_definitions(-D _WIN32)
+    set(CMAKE_CXXFLAGS "${CMAKE_CXX_FLAGS} -rdynamic")
+ENDIF()
+if(CMAKE_COMPILER_IS_GNUCXX)
+    add_compile_options(-flto)
+endif(CMAKE_COMPILER_IS_GNUCXX)
 # 指定生成目标
 aux_source_directory(. files)
 #Dont need orcjit

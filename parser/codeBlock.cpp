@@ -3,14 +3,14 @@
 #include "../core.h"
 #include <vector>
 #include "function.h"
-
+#include "../other/defer.h"
 namespace Parser {
     std::unique_ptr<AST::ExprAST> ParseCodeBlock(Module *module) {
         if (!module->nowToken->IsSign("{")) {
             return module->loger->ParseError("Code Block", "unexpected call to ParseCodeBlock.");
         }
         //开始解析
-        module->ReadAToken();
+        module->ReadAToken();   //吃掉{
         std::vector<std::unique_ptr<AST::ExprAST>> codes;
         while (module->nowToken && !module->nowToken->IsSign("}")) {
             auto tmp = ParseExpression(module);

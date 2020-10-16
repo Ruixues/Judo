@@ -21,7 +21,7 @@ namespace AST {
         auto CondV = module->Builder.CreateICmpEQ(
                 module->Builder.CreateIntCast(condV, llvm::Type::getInt1Ty(module->core->context), false),
                 llvm::ConstantInt::getTrue(module->core->context), "ifLoop");
-        module->Builder.CreateCondBr(CondV, LoopBB, AfterLoop);
+        module->Builder.CreateCondBr(CondV, LoopBodyBB, AfterLoop);
         module->Builder.SetInsertPoint(LoopBodyBB);
         module->NowForBlock.push(LoopBB);
         module->ForThenBlock.push(AfterLoop);
@@ -40,5 +40,6 @@ namespace AST {
         //否则那就回到头部
         module->Builder.CreateBr(LoopBB);
         module->Builder.SetInsertPoint(AfterLoop);
+        return (llvm::Value*)1;
     }
 }

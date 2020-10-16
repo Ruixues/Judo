@@ -30,18 +30,23 @@ public:
     RJIT()
             : Resolver(createLegacyLookupResolver(
             ES,
-            [this](llvm::StringRef Name) {
-                return findMangledSymbol(std::string(Name));
+            [this](const std::string &Name) {
+                auto symbol = ObjectLayer.findSymbol(Name, true);
+                if (!symbol)
+                {
+                    if (auto SymAddr = llvm::RTDyldMemoryManager::getSymbolAddressInProcess(Name))
+                        return llvm::JITSymbol(SymAddr, llvm::JITSymbolFlags::Exported);
+                }
+                return symbol;
             },
             [](llvm::Error Err) { cantFail(std::move(Err), "lookupFlags failed"); })),
               TM(llvm::EngineBuilder().selectTarget()), DL(TM->createDataLayout()),
-              ObjectLayer(llvm::AcknowledgeORCv1Deprecation, ES,
+              ObjectLayer(ES,
                           [this](llvm::orc::VModuleKey) {
                               return ObjLayerT::Resources{
                                       std::make_shared<llvm::SectionMemoryManager>(), Resolver};
                           }),
-              CompileLayer(llvm::AcknowledgeORCv1Deprecation, ObjectLayer,
-                           llvm::orc::SimpleCompiler(*TM)) {
+              CompileLayer(ObjectLayer, llvm::orc::SimpleCompiler(*TM)) {
         llvm::sys::DynamicLibrary::LoadLibraryPermanently(nullptr);
     }
 
