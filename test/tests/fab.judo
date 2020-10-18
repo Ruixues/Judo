@@ -1,0 +1,13 @@
+extern builtInTestPrintInt32 (t int32)
+func fac (t int32) (int32) {
+   if t == 2 {
+     return 1
+   }
+   if t == 1 {
+     return 1
+   }
+   return fac (t - 1) + fac (t - 2)
+}
+func main () {
+   builtInTestPrintInt32 (fac (5))
+}

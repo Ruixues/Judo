@@ -31,7 +31,11 @@ llvm::Value *int32Int32Sub(Module *module, llvm::Value *a, llvm::Value *b) {
 #else
 #define DLLEXPORT
 #endif
-
+extern "C" DLLEXPORT int builtInTestPrintInt32(int32 v) {
+    // 请不要在你的日常程序中调用这个函数
+    std::cout << v << std::endl;
+    return 0;
+}
 extern "C" DLLEXPORT int test(int32 v) {
     std::cout << "v:" << v << std::endl;
     return 0;
