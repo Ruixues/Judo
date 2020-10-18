@@ -11,4 +11,5 @@
 #include "for.h"
 #include "break.h"
 #include "import.h"
+#include "return.h"
 #include <memory>
