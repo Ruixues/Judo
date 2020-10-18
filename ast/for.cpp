@@ -1,8 +1,9 @@
 #include "for.h"
 #include "../core.h"
 #include "../other/defer.h"
+
 namespace AST {
-    llvm::Value* For::genCode() {
+    llvm::Value *For::genCode() {
         llvm::Function *f = module->Builder.GetInsertBlock()->getParent();
         llvm::BasicBlock *LoopBB =
                 llvm::BasicBlock::Create(module->core->context, "loop", f);
@@ -22,24 +23,18 @@ namespace AST {
                 module->Builder.CreateIntCast(condV, llvm::Type::getInt1Ty(module->core->context), false),
                 llvm::ConstantInt::getTrue(module->core->context), "ifLoop");
         module->Builder.CreateCondBr(CondV, LoopBodyBB, AfterLoop);
-        module->Builder.SetInsertPoint(LoopBodyBB);
         module->NowForBlock.push(LoopBB);
         module->ForThenBlock.push(AfterLoop);
-        defer(
-                module->NowForBlock.pop();
-                module->ForThenBlock.pop();
-        );
-        auto nowF = module->Builder.GetInsertBlock()->getParent();
+        module->Builder.SetInsertPoint(LoopBodyBB); //开始填写body
         if (!body->genCode()) {
+            module->NowForBlock.pop();
+            module->ForThenBlock.pop();
             return nullptr;
         }
-        //开始添加重新回到循环头的指令
-        if (module->Builder.GetInsertBlock()->getParent() != nowF) {    //已经return了
-            return llvm::Constant::getNullValue(llvm::Type::getDoubleTy(module->core->context));
-        }
-        //否则那就回到头部
-        module->Builder.CreateBr(LoopBB);
+        module->NowForBlock.pop();
+        module->ForThenBlock.pop();
+        module->Builder.CreateBr(LoopBB);   // 添加回到头部的跳转
         module->Builder.SetInsertPoint(AfterLoop);
-        return (llvm::Value*)1;
+        return (llvm::Value *) 1;
     }
 }

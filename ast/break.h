@@ -1,15 +1,19 @@
 #pragma once
+
 #include "AST.h"
 
 namespace AST {
-    class BreakAST :public ExprAST {
+    class BreakAST : public ExprAST {
     public:
         BreakAST() {}
-        llvm::Value * genCode();
+
+        llvm::Value *genCode();
     };
-    class ContinueAST :public ExprAST {
+
+    class ContinueAST : public ExprAST {
     public:
         ContinueAST() {}
-        llvm::Value * genCode();
+
+        llvm::Value *genCode();
     };
 }

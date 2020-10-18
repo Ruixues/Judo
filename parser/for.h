@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../ast/AST.h"
 
 namespace Parser {

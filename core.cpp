@@ -55,13 +55,10 @@ std::unique_ptr<AST::ExprAST> Module::HandleToken(std::shared_ptr<RToken> token)
             return Parser::ParseIdentifierExpr(this);
         case token_extern:
             return Parser::ParseExtern(this);
-        case token_sign:
-            if (token->IsSign("{")) {   //代码块
-                return Parser::ParseCodeBlock(this);
-            }
-            break;
         case token_var:
             return Parser::ParserVariableDefine(this);
+        case token_import:
+            return Parser::ParseImport(this);
     }
     return loger->ParseError("Core", "unexpected token type:" + std::to_string(token->type));
 }
@@ -89,7 +86,7 @@ void Judo::InitializeModuleAndPassManager() {
     FPM->add(llvm::createInstructionCombiningPass());
     FPM->add(llvm::createReassociatePass());
     FPM->add(llvm::createGVNPass());
-    FPM->add(llvm::createCFGSimplificationPass());
+    //FPM->add(llvm::createCFGSimplificationPass());
     FPM->add(llvm::createInstructionCombiningPass());
     FPM->add(llvm::createReassociatePass());
     FPM->doInitialization();
@@ -141,7 +138,7 @@ void Module::EnterScope() {
 }
 
 void Module::ExitScope() {
-    if (ScopeVariables.empty()) return ;
+    if (ScopeVariables.empty()) return;
     auto now = ScopeVariables.top();
     for (auto &name:now) {
         EraseValue(name);

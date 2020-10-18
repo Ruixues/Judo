@@ -12,7 +12,7 @@ llvm::Value *OpHandler::getBinaryOp(std::string opt, llvm::Value *a, llvm::Value
         opLink[typeToStr(a->getType())][typeToStr(b->getType())].end()) {
         return module->loger->GetFunctionError("Undefined opt of " + opt);
     }
-    return opLink[typeToStr(a->getType())][typeToStr(b->getType())][opt] (module,a,b);
+    return opLink[typeToStr(a->getType())][typeToStr(b->getType())][opt](module, a, b);
 }
 
 bool OpHandler::linkOp(const std::string &a, const std::string &b, const std::string &opt, GetOptFunc function) {

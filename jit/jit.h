@@ -32,8 +32,7 @@ public:
             ES,
             [this](const std::string &Name) {
                 auto symbol = ObjectLayer.findSymbol(Name, true);
-                if (!symbol)
-                {
+                if (!symbol) {
                     if (auto SymAddr = llvm::RTDyldMemoryManager::getSymbolAddressInProcess(Name))
                         return llvm::JITSymbol(SymAddr, llvm::JITSymbolFlags::Exported);
                 }

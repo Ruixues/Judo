@@ -6,7 +6,9 @@
 
 //用来获取运算符处理函数的
 class Module;
-typedef std::function<llvm::Value* (Module*,llvm::Value*,llvm::Value*)> GetOptFunc;
+
+typedef std::function<llvm::Value *(Module *, llvm::Value *, llvm::Value *)> GetOptFunc;
+
 class OpHandler {
 private:
 public:

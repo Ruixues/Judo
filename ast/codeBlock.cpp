@@ -13,6 +13,6 @@ namespace AST {
                 return nullptr;
             }
         }
-        return (llvm::Value*)1;   //占位
+        return (llvm::Value *) 1;   //占位
     }
 }

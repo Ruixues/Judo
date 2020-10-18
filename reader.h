@@ -36,12 +36,13 @@ enum Token {
     token_for = 13,
     token_break = 14,
     token_continue = 15,
+    token_import = 16,
 };
 
 #include <iostream>
 
-static bool isMustSingle(std::string str) {
-    static std::set<std::string> t = {"{", "}", "(", ")", "+", "-", "*", "/", "%", ":", ";", "="};
+static bool isAllowed(std::string str) {
+    static std::set<std::string> t = {"{", "}", "(", ")", "+", "-", "*", "/", "%", ":", ";", "=", "=="};
     return t.find(str) != t.end();
 }
 

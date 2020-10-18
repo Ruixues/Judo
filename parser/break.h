@@ -5,5 +5,6 @@
 
 namespace Parser {
     std::unique_ptr<AST::ExprAST> ParseBreak(Module *module);
+
     std::unique_ptr<AST::ExprAST> ParseContinue(Module *module);
 }
