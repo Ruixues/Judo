@@ -101,6 +101,12 @@ namespace Parser {
                 if (!RHS)
                     return nullptr;
             }
+            if (BinOp == "[") { //那末尾还有一个]
+                if (!module->nowToken->IsSign("]")) {
+                    return module->loger->ParseError("BinOp","expect ] for [");
+                }
+                module->ReadAToken();   //吃掉]
+            }
             LHS = make_AST<AST::BinaryExprAST>(module, BinOp, std::move(LHS),
                                                std::move(RHS));
         }

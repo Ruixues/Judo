@@ -18,15 +18,26 @@ namespace AST {
             initV = value->genCode();
             if (!initV) return nullptr;
         }
+        size_t array_size = 0;
+        if (!levelSize.empty()) {   //是数组
+            for (auto v:levelSize) {
+                array_size *= v;
+            }
+        }
+        llvm::Type* valType;
         if (type.isType(Type_Undefined)) {
             //需要自己生成类型
-            v = module->CreateAlloca(module->Builder.GetInsertBlock()->getParent(), name,
-                                     initV->getType());
+            valType = initV->getType();
         } else {
-            v = module->CreateAlloca(module->Builder.GetInsertBlock()->getParent(), name,
-                                     type.getType(module->core->context));
+            valType = type.getType(module->core->context);
         }
-        if (initV) {
+        if (!levelSize.empty()) {
+            for (auto size:levelSize) {
+                valType = llvm::ArrayType::get(valType,size);
+            }
+        }
+        v = module->CreateAlloca(module->Builder.GetInsertBlock()->getParent(), name,valType);
+        if (value) {
             module->Builder.CreateStore(initV, v);
         }
         module->SetNamedValue(name, v);

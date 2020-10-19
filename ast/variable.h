@@ -21,10 +21,12 @@ namespace AST {
         std::string name;
         std::unique_ptr<ExprAST> value;
         JudoType type;
+        llvm::Type* realType;
+        std::vector<size_t> levelSize;  //每一维的大小，数组才需要提供
     public:
-        VariableDefine(const std::string &name, std::unique_ptr<ExprAST> value, JudoType type) : name(name),
+        VariableDefine(const std::string &name, std::unique_ptr<ExprAST> value, JudoType type, std::vector<size_t> level) : name(name),
                                                                                                  value(std::move(
-                                                                                                         value)),
+                                                                                                         value)),levelSize(std::move(level)),
                                                                                                  type(type) {}
 
         llvm::Value *genCode();

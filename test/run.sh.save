@@ -1,0 +1,3 @@
+ls
+clang++ -lpthread -o runner runner.cpp
+	./runner
