@@ -15,7 +15,8 @@ namespace AST {
             AnotherName.push_back(another);
         }
     }
-    llvm::Value * ImportAST::genCode() {
+
+    llvm::Value *ImportAST::genCode() {
         return nullptr;
     }
 }

@@ -1,4 +1,5 @@
 #include "split.h"
+
 std::vector<std::string> split(const std::string &str, const std::string &pattern) {
     std::vector<std::string> ret;
     if (pattern.empty()) return ret;

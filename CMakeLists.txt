@@ -3,8 +3,9 @@ cmake_minimum_required(VERSION 3.1)
 
 # 项目信息
 
-#SET(CMAKE_C_COMPILER clang)
-#SET(CMAKE_CXX_COMPILER clang++)
+SET(CMAKE_C_COMPILER clang)
+SET(CMAKE_CXX_COMPILER clang++)
+option(LLVM_ENABLE_LLD ON)   #使用LLD作为链接器
 #SET(CMAKE_C_COMPILER gcc)
 #SET(CMAKE_CXX_COMPILER g++)
 project(Judo)
@@ -19,7 +20,7 @@ add_definitions(${LLVM_DEFINITIONS})
 IF (CMAKE_SYSTEM_NAME MATCHES "Windows")
     MESSAGE(STATUS "current platform: Windows")
     add_definitions(-D _WIN32)
-    set(CMAKE_CXXFLAGS "${CMAKE_CXX_FLAGS} -rdynamic")
+    set(CMAKE_CXXFLAGS "${CMAKE_CXX_FLAGS} -rdynamic -Xlinker --export-dynamic")
 ENDIF ()
 if (CMAKE_COMPILER_IS_GNUCXX)
     add_compile_options(-flto)

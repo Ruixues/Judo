@@ -16,6 +16,7 @@ namespace AST {
         std::vector<std::string> AnotherName;
     public:
         ImportAST(std::vector<std::string> TargetModule, std::vector<std::string> AnotherName);
-        llvm::Value * genCode();
+
+        llvm::Value *genCode();
     };
 }

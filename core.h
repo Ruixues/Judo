@@ -10,7 +10,6 @@
 #include "jit/jit.h"
 #include <queue>
 #include <stack>
-
 //每个文件都是一个module.
 class Judo;
 
@@ -28,11 +27,11 @@ public:
     std::unique_ptr<llvm::Module> module;
 
     llvm::Function *getFunction(std::string Name);
-
+    std::map<std::string,llvm::GlobalVariable*> globalVariable;
     void EnterScope();  //进入作用域
     void ExitScope();  //退出作用域
     std::map<std::string, std::unique_ptr<AST::FunctionProto>> FunctionProto;
-    std::map<std::string, std::stack<llvm::AllocaInst *>> namedValues;
+    std::map<std::string, std::stack<llvm::Value *>> namedValues;
     std::unique_ptr<OpHandler> opHandler;
 
     Module(std::string file, Judo *core);
@@ -41,17 +40,17 @@ public:
 
     void Parse();
 
-    llvm::AllocaInst *GetNamedValue(const std::string &Name);
+    llvm::Value *GetNamedValue(const std::string &Name);
 
-    void SetNamedValue(const std::string &Name, llvm::AllocaInst *Value);
+    void SetNamedValue(const std::string &Name, llvm::Value *Value);
 
     void EraseValue(const std::string &Name);
 
     std::unique_ptr<AST::ExprAST> HandleToken(std::shared_ptr<RToken> token);
 
-    llvm::AllocaInst *CreateAlloca(llvm::Function *Function,
+    llvm::Value *CreateAlloca(llvm::Function *Function,
                                    const std::string &VarName, llvm::Type *type);
-
+    ~Module();
     std::shared_ptr<RToken> ReadAToken() {
         nowToken = reader->ReadAToken();
         return nowToken;

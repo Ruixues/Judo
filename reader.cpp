@@ -105,15 +105,13 @@ std::shared_ptr<RToken> RxReader::ReadAToken() {
     // 说明啥都不是，那就连续读，一直到EOF或者空格
     std::string ret;
     ret += lastChar;
-    while (isAllowed(ret)) {
+    //最长的运算符长度为2
+    lastChar = ReadChar(fstream);
+    auto tmp = ret;
+    tmp += lastChar;
+    if (isAllowed(tmp)) {
+        ret = tmp;
         lastChar = ReadChar(fstream);
-        auto tmp = ret;
-        tmp += lastChar;
-        if (isAllowed(tmp)) {
-            ret += lastChar;
-        } else {
-            break ;
-        }
     }
     return std::make_shared<RToken>(token_sign, ret);
 }

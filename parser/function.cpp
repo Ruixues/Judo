@@ -13,6 +13,7 @@
 #include "for.h"
 #include "break.h"
 #include "return.h"
+
 namespace Parser {
     std::unique_ptr<AST::FunctionProto> ParseFunctionProto(Module *module) {
         if (module->nowToken->type != token_str) {
@@ -67,8 +68,9 @@ namespace Parser {
     }
 
     int GetTokPrecedence(Module *module) {
-        if (module->nowToken->type != token_sign)
+        if (module->nowToken->type != token_sign) {
             return -1;
+        }
         //确定是一个存在的运算符
         if (AST::BinopPrecedence.find(module->nowToken->GetSign()) == AST::BinopPrecedence.end()) {
             return -1; //不存在就返回-1
@@ -88,6 +90,7 @@ namespace Parser {
                 return LHS;
             // 已经确定了可以计算
             std::string BinOp = module->nowToken->GetSign();
+            std::cout << "Op:" << BinOp << std::endl;
             module->ReadAToken();
             // 获取操作符的右边第一个
             auto RHS = ParsePrimary(module);
@@ -96,19 +99,21 @@ namespace Parser {
             int NextPrec = GetTokPrecedence(module); //获取右边的下一个运算符
             if (TokPrec < NextPrec)            //下下一个比自己和下一个的优先级大 所以就要先下一个，不能先自己.否则就直接自己和下一个结合
             {
-
                 RHS = ParseBinOpRHS(module, TokPrec + 1, std::move(RHS)); //不能和自己与下一个大小相同
                 if (!RHS)
                     return nullptr;
             }
             if (BinOp == "[") { //那末尾还有一个]
                 if (!module->nowToken->IsSign("]")) {
-                    return module->loger->ParseError("BinOp","expect ] for [");
+                    return module->loger->ParseError("BinOp", "expect ] for [");
                 }
-                module->ReadAToken();   //吃掉]
+                std::cout << "rr:" << module->ReadAToken()->GetSign() << std::endl;   //吃掉]
+                //这个是特殊的
+                LHS = make_AST<AST::VariableExpr>(module,std::move(LHS),std::move(RHS));
+            } else {
+                LHS = make_AST<AST::BinaryExprAST>(module, BinOp, std::move(LHS),
+                                                   std::move(RHS));
             }
-            LHS = make_AST<AST::BinaryExprAST>(module, BinOp, std::move(LHS),
-                                               std::move(RHS));
         }
     }
 

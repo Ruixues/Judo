@@ -7,6 +7,7 @@
 void Module::Parse() {
     // 开始解析
     ReadAToken();
+    EnterScope();
     while (1) {
         if (nowToken->type == token_eof) {
             break;
@@ -14,6 +15,7 @@ void Module::Parse() {
         auto tmp = HandleToken(nowToken);
         tmp->genCode();
     }
+    ExitScope();
     module->print(llvm::errs(), nullptr);
     auto main = getFunction("main");
     if (main) {
@@ -56,7 +58,7 @@ std::unique_ptr<AST::ExprAST> Module::HandleToken(std::shared_ptr<RToken> token)
         case token_extern:
             return Parser::ParseExtern(this);
         case token_var:
-            return Parser::ParserVariableDefine(this);
+            return Parser::ParserVariableDefine(this,true);
         case token_import:
             return Parser::ParseImport(this);
     }
@@ -102,14 +104,17 @@ llvm::Function *Module::getFunction(std::string Name) {
     return nullptr;
 }
 
-llvm::AllocaInst *Module::CreateAlloca(llvm::Function *Function,
+llvm::Value *Module::CreateAlloca(llvm::Function *Function,
                                        const std::string &Name, llvm::Type *type) {
+    if (!Function) {
+
+    }
     llvm::IRBuilder<> tmp(&Function->getEntryBlock(),
                           Function->getEntryBlock().begin());
     return tmp.CreateAlloca(type, 0, Name.c_str());
 }
 
-llvm::AllocaInst *Module::GetNamedValue(const std::string &Name) {
+llvm::Value *Module::GetNamedValue(const std::string &Name) {
     auto v = namedValues.find(Name);
     if (v == namedValues.end()) {
         return nullptr;
@@ -117,9 +122,9 @@ llvm::AllocaInst *Module::GetNamedValue(const std::string &Name) {
     return v->second.top();
 }
 
-void Module::SetNamedValue(const std::string &Name, llvm::AllocaInst *Value) {
+void Module::SetNamedValue(const std::string &Name, llvm::Value *Value) {
     if (namedValues.find(Name) == namedValues.end()) {
-        namedValues[Name] = std::stack<llvm::AllocaInst *>();
+        namedValues[Name] = std::stack<llvm::Value *>();
     }
     namedValues[Name].push(Value);
 }
@@ -144,4 +149,7 @@ void Module::ExitScope() {
         EraseValue(name);
     }
     ScopeVariables.pop();
+}
+Module::~Module() {
+
 }

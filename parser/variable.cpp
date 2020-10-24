@@ -2,7 +2,7 @@
 #include "function.h"
 
 namespace Parser {
-    std::unique_ptr<AST::ExprAST> ParserVariableDefine(Module *module) {
+    std::unique_ptr<AST::ExprAST> ParserVariableDefine(Module *module,bool global) {
         if (module->nowToken->type != token_var) {
             return module->loger->ParseError("Variable Define", "unexpected call to ParseVariableDefine");
         }
@@ -25,12 +25,12 @@ namespace Parser {
             while (module->nowToken->IsSign("[")) { //是数组
                 auto num = module->ReadAToken();
                 if (num->type != token_int) {
-                    return module->loger->ParseError("Variable Define","expect number in []");
+                    return module->loger->ParseError("Variable Define", "expect number in []");
                 }
                 level.push_back(num->GetInt64());
                 module->ReadAToken();
                 if (!module->nowToken->IsSign("]")) {
-                    return module->loger->ParseError("Variable Define","expect ]");
+                    return module->loger->ParseError("Variable Define", "expect ]");
                 }
                 module->ReadAToken();   //吃掉[
             }
@@ -41,7 +41,8 @@ namespace Parser {
                 return module->loger->ParseError("Variable Define",
                                                  "expect the type of variable or the initial value");
             }
-            return make_AST<AST::VariableDefine>(module, name->GetStr(), nullptr, JudoType(type->GetStr()),std::move (level));
+            return make_AST<AST::VariableDefine>(module, name->GetStr(), nullptr, JudoType(type->GetStr()),
+                                                 std::move(level),global);
         }
         //有默认值
         module->ReadAToken();   //吃掉=
@@ -49,8 +50,9 @@ namespace Parser {
         if (!initialValue) return nullptr;
         if (!type) {
             return make_AST<AST::VariableDefine>(module, name->GetStr(), std::move(initialValue),
-                                                 JudoType(Type_Undefined),std::move (level));
+                                                 JudoType(Type_Undefined), std::move(level),global);
         }
-        return make_AST<AST::VariableDefine>(module, name->GetStr(), std::move(initialValue), JudoType(type->GetStr()),std::move (level));
+        return make_AST<AST::VariableDefine>(module, name->GetStr(), std::move(initialValue), JudoType(type->GetStr()),
+                                             std::move(level),global);
     }
 }

@@ -42,7 +42,7 @@ namespace AST {
     public:
         FunctionAST(std::unique_ptr<FunctionProto> proto, std::unique_ptr<ExprAST> code) : proto(std::move(proto)),
                                                                                            code(std::move(code)) {
-
+            
         }
 
         llvm::Value *genCode();

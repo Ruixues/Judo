@@ -38,7 +38,7 @@ namespace AST {
         //开始进入新的作用域，应当改变部分变量的引用
         module->EnterScope();
         for (auto &arg:f->args()) {
-            llvm::AllocaInst *Alloca = module->CreateAlloca(f, arg.getName(), arg.getType());
+            llvm::Value *Alloca = module->CreateAlloca(f, arg.getName(), arg.getType());
             module->Builder.CreateStore(&arg, Alloca);   //储存参数到变量中
             module->SetNamedValue(arg.getName(), Alloca);
         }
@@ -46,7 +46,7 @@ namespace AST {
             module->Builder.CreateRetVoid();
             //开始判断当前位置，是否已经创建了return语句
             llvm::verifyFunction(*f);
-            module->core->FPM->run(*f);
+            //module->core->FPM->run(*f);
             module->ExitScope();
             return f;
         }

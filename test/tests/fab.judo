@@ -1,13 +1,14 @@
 extern builtInTestPrintInt32 (t int32)
+var buf:int32 [1000]
 func fac (t int32) (int32) {
-   if t == 2 {
-     return 1
+   if buf [t] != 0 {
+     return buf [t]
    }
-   if t == 1 {
-     return 1
-   }
-   return fac (t - 1) + fac (t - 2)
+   buf [t] = fac (t - 1) + fac (t - 2)
+   return buf [t]
 }
 func main () {
+   buf [1] = 1
+   buf [2] = 1
    builtInTestPrintInt32 (fac (5))
 }
