@@ -127,6 +127,7 @@ void Module::SetNamedValue(const std::string &Name, llvm::Value *Value) {
         namedValues[Name] = std::stack<llvm::Value *>();
     }
     namedValues[Name].push(Value);
+    ScopeVariables.top().push_back(Name);
 }
 
 void Module::EraseValue(const std::string &Name) {
@@ -146,6 +147,7 @@ void Module::ExitScope() {
     if (ScopeVariables.empty()) return;
     auto now = ScopeVariables.top();
     for (auto &name:now) {
+        std::cout << "Erase:" << name << std::endl;
         EraseValue(name);
     }
     ScopeVariables.pop();

@@ -32,6 +32,7 @@ public:
     void ExitScope();  //退出作用域
     std::map<std::string, std::unique_ptr<AST::FunctionProto>> FunctionProto;
     std::map<std::string, std::stack<llvm::Value *>> namedValues;
+    llvm::Value* nowFunctionReturnValue;    //当前函数的返回值
     std::unique_ptr<OpHandler> opHandler;
 
     Module(std::string file, Judo *core);

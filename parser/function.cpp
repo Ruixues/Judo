@@ -90,7 +90,6 @@ namespace Parser {
                 return LHS;
             // 已经确定了可以计算
             std::string BinOp = module->nowToken->GetSign();
-            std::cout << "Op:" << BinOp << std::endl;
             module->ReadAToken();
             // 获取操作符的右边第一个
             auto RHS = ParsePrimary(module);
@@ -107,7 +106,7 @@ namespace Parser {
                 if (!module->nowToken->IsSign("]")) {
                     return module->loger->ParseError("BinOp", "expect ] for [");
                 }
-                std::cout << "rr:" << module->ReadAToken()->GetSign() << std::endl;   //吃掉]
+                module->ReadAToken();   //吃掉]
                 //这个是特殊的
                 LHS = make_AST<AST::VariableExpr>(module,std::move(LHS),std::move(RHS));
             } else {
