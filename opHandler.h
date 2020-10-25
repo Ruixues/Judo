@@ -26,6 +26,9 @@ public:
                 if (bit == 32) {
                     return "Int32";
                 }
+                if (bit == 64) {
+                    return "Int64";
+                }
                 return "unknown";
             }
             case llvm::Type::FloatTyID:

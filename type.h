@@ -12,6 +12,7 @@ enum BuildinType {
     Type_double = 2,
     Type_void = 3,
     Type_Undefined = 4,
+    Type_int64 = 5,
 };
 
 class JudoType {
@@ -33,6 +34,8 @@ public:
             t = Type_double;
         } else if (TypeName == "void") {
             t = Type_void;
+        } else if (TypeName == "int64") {
+            t = Type_int64;
         } else {
             CustomTypeName = TypeName;
         }
@@ -44,6 +47,8 @@ public:
                 return llvm::Type::getInt32Ty(context);
             case Type_void:
                 return llvm::Type::getVoidTy(context);
+            case Type_int64:
+                return llvm::Type::getInt64Ty(context);
         }
         return llvm::Type::getFloatTy(context);
     }

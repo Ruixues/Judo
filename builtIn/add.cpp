@@ -10,11 +10,16 @@ llvm::Value *int32Int32Sub(Module *module, llvm::Value *a, llvm::Value *b);
 llvm::Value *int32Int32Equal(Module *module, llvm::Value *a, llvm::Value *b);
 
 llvm::Value *int32Int32NotEqual(Module *module, llvm::Value *a, llvm::Value *b);
+
 void bindAdd(Module *module) {
     module->opHandler->linkOp("Int32", "Int32", "+", int32Int32Add);
     module->opHandler->linkOp("Int32", "Int32", "-", int32Int32Sub);
     module->opHandler->linkOp("Int32", "Int32", "==", int32Int32Equal);
     module->opHandler->linkOp("Int32", "Int32", "!=", int32Int32NotEqual);
+    module->opHandler->linkOp("Int64", "Int64", "+", int32Int32Add);
+    module->opHandler->linkOp("Int64", "Int64", "-", int32Int32Sub);
+    module->opHandler->linkOp("Int64", "Int64", "==", int32Int32Equal);
+    module->opHandler->linkOp("Int64", "Int64", "!=", int32Int32NotEqual);
     return;
 }
 llvm::Value *int32Int32NotEqual(Module *module, llvm::Value *a, llvm::Value *b) {
@@ -38,6 +43,11 @@ llvm::Value *int32Int32Sub(Module *module, llvm::Value *a, llvm::Value *b) {
 #define DLLEXPORT
 #endif
 extern "C" DLLEXPORT int builtInTestPrintInt32(int32 v) {
+    // 请不要在你的日常程序中调用这个函数
+    std::cout << v << std::endl;
+    return 0;
+}
+extern "C" DLLEXPORT int builtInTestPrintInt64(int64 v) {
     // 请不要在你的日常程序中调用这个函数
     std::cout << v << std::endl;
     return 0;
