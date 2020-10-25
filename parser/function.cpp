@@ -69,16 +69,13 @@ namespace Parser {
 
     int GetTokPrecedence(Module *module) {
         if (module->nowToken->type != token_sign) {
-            return -1;
+            return 10000;
         }
         //确定是一个存在的运算符
         if (AST::BinopPrecedence.find(module->nowToken->GetSign()) == AST::BinopPrecedence.end()) {
-            return -1; //不存在就返回-1
+            return 10000;
         }
         int TokPrec = AST::BinopPrecedence[module->nowToken->GetSign()];
-        if (TokPrec <= 0)
-            return -1;
-
         return TokPrec;
     }
 
@@ -86,8 +83,9 @@ namespace Parser {
     ParseBinOpRHS(Module *module, int ExprPrec, std::unique_ptr<AST::ExprAST> LHS) {
         while (1) {
             int TokPrec = GetTokPrecedence(module);
-            if (TokPrec < ExprPrec) //如果比上一个运算符小的话,比如1*2+3 则+3不能计算进去，就直接返回
+            if (TokPrec > ExprPrec) {
                 return LHS;
+            }
             // 已经确定了可以计算
             std::string BinOp = module->nowToken->GetSign();
             module->ReadAToken();
@@ -96,9 +94,9 @@ namespace Parser {
             if (!RHS)
                 return nullptr;
             int NextPrec = GetTokPrecedence(module); //获取右边的下一个运算符
-            if (TokPrec < NextPrec)            //下下一个比自己和下一个的优先级大 所以就要先下一个，不能先自己.否则就直接自己和下一个结合
+            if (TokPrec > NextPrec)            //下下一个比自己和下一个的优先级小 所以就要先下一个，不能先自己.否则就直接自己和下一个结合
             {
-                RHS = ParseBinOpRHS(module, TokPrec + 1, std::move(RHS)); //不能和自己与下一个大小相同
+                RHS = ParseBinOpRHS(module, TokPrec - 1, std::move(RHS)); //不能和自己与下一个大小相同
                 if (!RHS)
                     return nullptr;
             }
@@ -107,7 +105,6 @@ namespace Parser {
                     return module->loger->ParseError("BinOp", "expect ] for [");
                 }
                 module->ReadAToken();   //吃掉]
-                //这个是特殊的
                 LHS = make_AST<AST::VariableExpr>(module,std::move(LHS),std::move(RHS));
             } else {
                 LHS = make_AST<AST::BinaryExprAST>(module, BinOp, std::move(LHS),
@@ -120,7 +117,7 @@ namespace Parser {
         auto LHS = ParsePrimary(module);
         if (!LHS)
             return nullptr;
-        return ParseBinOpRHS(module, 0, std::move(LHS));
+        return ParseBinOpRHS(module, 100, std::move(LHS));
     }
 
     std::unique_ptr<AST::ExprAST> ParseIdentifierExpr(Module *module) {
@@ -137,7 +134,7 @@ namespace Parser {
         std::vector<std::unique_ptr<AST::ExprAST>> Args;
         if (!module->nowToken->IsSign(")")) {
             //那就是有参数
-            while (1) {
+            while (true) {
                 if (auto Arg = Parser::ParseExpression(module))
                     Args.push_back(std::move(Arg));
                 else
@@ -175,6 +172,7 @@ namespace Parser {
                 if (token->IsSign("{")) {
                     return ParseCodeBlock(module);
                 }
+                return module->loger->ParseError("Parse Primary", "未知符号:" + token->GetSign());
             }
             case token_for:
                 return ParseFor(module);
@@ -190,7 +188,7 @@ namespace Parser {
     }
 
     std::unique_ptr<AST::FunctionAST> ParseFunction(Module *module) {
-        auto token = module->ReadAToken();  //吃掉 func 标识符
+        module->ReadAToken();  //吃掉 func 标识符
         //开始解析函数的定义
         auto proto = ParseFunctionProto(module);
         if (!proto)

@@ -3,14 +3,13 @@
 
 namespace AST {
     llvm::Value* VariableExpr::getRealV() {
-        if (bufV) return bufV;
         if (!lv) {  //单纯的变量
-            return bufV = module->GetNamedValue(name);
+            return module->GetNamedValue(name);
         }
         //否则那就索引数组
         auto la = dynamic_cast<VariableExpr *>(lv.get());
         if (!la) {
-            module->loger->GenCodeError("expect variable to access as an array");
+            module->loger->GenCodeError("expect a variable to access");
             return nullptr;
         }
         auto ll = la->genCode(),rr = index->genCode();
@@ -23,15 +22,13 @@ namespace AST {
             return nullptr;
         }
         //开始索引
-        bufV = module->Builder.CreateGEP(ll,rr);
-        //bufV = module->Builder.CreateGEP(ll, rr);
-        return bufV;
+        return module->Builder.CreateGEP(ll,rr);
     }
     llvm::Value *VariableExpr::genCode() {
         if (!name.empty()) {
             auto tt = module->GetNamedValue(name);
             if (tt->getType()->getPointerElementType()->isArrayTy()) {
-                return module->Builder.CreateBitCast(tt,llvm::PointerType::getUnqual(tt->getType()->getPointerElementType()->getArrayElementType()));
+                return module->Builder.CreateBitCast(tt,llvm::PointerType::get(tt->getType()->getPointerElementType()->getArrayElementType(),0));
             }
         }
         return module->Builder.CreateLoad(getRealV());

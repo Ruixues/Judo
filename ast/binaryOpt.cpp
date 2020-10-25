@@ -23,7 +23,7 @@ namespace AST {
             if (!val) return nullptr;
             llvm::Value *variable = LHSE->getRealV();
             if (!variable) {
-                return module->loger->GenCodeError("Unknown variable name");
+                return module->loger->GenCodeError("unepected variable");
             }
             //那就开始赋值
             module->Builder.CreateStore(val, variable);

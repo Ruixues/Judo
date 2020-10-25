@@ -2,7 +2,6 @@
 #include "core.h"
 
 llvm::Value *OpHandler::getBinaryOp(std::string opt, llvm::Value *a, llvm::Value *b) {
-    std::cout << typeToStr(a->getType()) << "+" << typeToStr(a->getType()) << std::endl;
     if (opLink.find(typeToStr(a->getType())) == opLink.end()) {
         return module->loger->GetFunctionError("Undefined opt of " + opt);
     }

@@ -1,14 +1,13 @@
 #include "core.h"
 #include "parser/parser.h"
 #include "builtIn/builtIn.h"
-#include "jit/jit.h"
 #include <queue>
 
 void Module::Parse() {
     // 开始解析
     ReadAToken();
     EnterScope();
-    while (1) {
+    while (true) {
         if (nowToken->type == token_eof) {
             break;
         }
@@ -147,7 +146,6 @@ void Module::ExitScope() {
     if (ScopeVariables.empty()) return;
     auto now = ScopeVariables.top();
     for (auto &name:now) {
-        std::cout << "Erase:" << name << std::endl;
         EraseValue(name);
     }
     ScopeVariables.pop();

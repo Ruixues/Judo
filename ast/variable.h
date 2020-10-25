@@ -10,7 +10,6 @@ namespace AST {
         std::string name;
         std::unique_ptr<AST::ExprAST> lv;  //对于是数组索引的
         std::unique_ptr<AST::ExprAST> index;
-        llvm::Value* bufV;
     public:
         VariableExpr(const std::string &name) : name(name) {
         }

@@ -47,7 +47,6 @@ namespace AST {
         }
         if (code->genCode()) {
             module->Builder.CreateRetVoid();
-            //开始判断当前位置，是否已经创建了return语句
             llvm::verifyFunction(*f);
             //module->core->FPM->run(*f);
             return f;
