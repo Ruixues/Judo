@@ -42,7 +42,7 @@ enum Token {
 #include <iostream>
 
 static bool isAllowed(std::string str) {
-    static std::set<std::string> t = {"{", "}", "(", ")", "+", "-", "*", "/", "%", ":", ";", "=", "==", "!=", "[", "]"};
+    static std::set<std::string> t = {"." ,"{", "}", "(", ")", "+", "-", "*", "/", "%", ":", ";", "=", "==", "!=", "[", "]"};
     return t.find(str) != t.end();
 }
 

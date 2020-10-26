@@ -25,7 +25,7 @@ public:
     std::shared_ptr<RToken> nowToken;
     llvm::IRBuilder<> Builder;
     std::unique_ptr<llvm::Module> module;
-
+    std::map<std::string,llvm::Type*> structTypes;
     llvm::Function *getFunction(std::string Name);
     std::map<std::string,llvm::GlobalVariable*> globalVariable;
     void EnterScope();  //进入作用域

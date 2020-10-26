@@ -10,6 +10,7 @@ namespace AST {
         std::string name;
         std::unique_ptr<AST::ExprAST> lv;  //对于是数组索引的
         std::unique_ptr<AST::ExprAST> index;
+        std::unique_ptr<AST::ExprAST> accessRight;  //处理.
     public:
         VariableExpr(const std::string &name) : name(name) {
         }
@@ -17,7 +18,7 @@ namespace AST {
         VariableExpr(std::unique_ptr<AST::ExprAST> lv, std::unique_ptr<AST::ExprAST> index) : lv(std::move(lv)),
                                                                                               index(std::move(index)) {
         }
-
+        VariableExpr(std::unique_ptr<AST::ExprAST> accessRight):accessRight(std::move(accessRight)) {}   //创建结构体访问
         llvm::Value* getRealV();
 
         std::string GetName() { return name; }

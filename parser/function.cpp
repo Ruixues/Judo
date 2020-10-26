@@ -13,7 +13,7 @@
 #include "for.h"
 #include "break.h"
 #include "return.h"
-
+#include "../ast/class.h"
 namespace Parser {
     std::unique_ptr<AST::FunctionProto> ParseFunctionProto(Module *module) {
         if (module->nowToken->type != token_str) {
@@ -107,6 +107,9 @@ namespace Parser {
                 module->ReadAToken();   //吃掉]
                 LHS = make_AST<AST::VariableExpr>(module,std::move(LHS),std::move(RHS));
             } else {
+                if (BinOp == ".") {
+                    LHS = make_AST<AST::VariableExpr>(module,std::move(RHS));
+                }
                 LHS = make_AST<AST::BinaryExprAST>(module, BinOp, std::move(LHS),
                                                    std::move(RHS));
             }
