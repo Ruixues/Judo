@@ -25,6 +25,8 @@ jobs:
       - name: Chang Target
         run: |
           git remote set-url origin https://gitee.com/dorbmon/judo-language
+          git config --global user.email "1263592223@qq.com"
+          git config --global user.name "Dorbmon"
           git add .
           git commit -m "Update from https://github.com/Ruixues/Judo"
           git push https://${{ secrets.GITEE }}:${{ secrets.GITEEPASSWORD }}@gitee.com/dorbmon/judo-language.git --all
