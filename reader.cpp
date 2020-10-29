@@ -54,6 +54,9 @@ std::shared_ptr<RToken> RxReader::ReadAToken() {
         if (str == "return") {
             return std::make_shared<RToken>(token_return);
         }
+        if (str == "class") {
+            return std::make_shared<RToken>(token_class);
+        }
         return std::make_shared<RToken>(token_str, str);
     }
     /*

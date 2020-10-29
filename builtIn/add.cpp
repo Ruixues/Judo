@@ -22,9 +22,11 @@ void bindAdd(Module *module) {
     module->opHandler->linkOp("Int64", "Int64", "!=", int32Int32NotEqual);
     return;
 }
+
 llvm::Value *int32Int32NotEqual(Module *module, llvm::Value *a, llvm::Value *b) {
     return module->Builder.CreateICmpNE(a, b);
 }
+
 llvm::Value *int32Int32Equal(Module *module, llvm::Value *a, llvm::Value *b) {
     return module->Builder.CreateICmpEQ(a, b);
 }

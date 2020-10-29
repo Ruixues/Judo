@@ -20,12 +20,11 @@ namespace AST {
     public:
         std::string name;
         std::vector<std::unique_ptr<FunctionArg>> args;
-        std::string returnName; //返回变量的名字
-        JudoType returnType;
+        std::unique_ptr<JudoType> returnType;
 
-        FunctionProto(std::string name, std::vector<std::unique_ptr<FunctionArg>> args, std::string returnName,
-                      JudoType returnType) : name(name), args(std::move(args)), returnName(returnName),
-                                             returnType(returnType) {
+        FunctionProto(std::string name, std::vector<std::unique_ptr<FunctionArg>> args,
+                      std::unique_ptr<JudoType> returnType) : name(name), args(std::move(args)),
+                                             returnType(std::move(returnType)) {
         }
 
         llvm::Value *genCode() {
@@ -42,7 +41,7 @@ namespace AST {
     public:
         FunctionAST(std::unique_ptr<FunctionProto> proto, std::unique_ptr<ExprAST> code) : proto(std::move(proto)),
                                                                                            code(std::move(code)) {
-            
+
         }
 
         llvm::Value *genCode();

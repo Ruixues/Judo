@@ -2,7 +2,6 @@
 #include "../core.h"
 #include "../ast/binaryOpt.h"
 #include "../ast/FunctionCall.h"
-#include "../ast/function.h"
 #include <memory>
 #include <vector>
 #include "../ast/variable.h"
@@ -13,7 +12,7 @@
 #include "for.h"
 #include "break.h"
 #include "return.h"
-#include "../ast/class.h"
+#include "type.h"
 namespace Parser {
     std::unique_ptr<AST::FunctionProto> ParseFunctionProto(Module *module) {
         if (module->nowToken->type != token_str) {
@@ -43,28 +42,20 @@ namespace Parser {
             return module->loger->FunctionProtoParseError("There must be a ')' after Args");
         }
         token = module->ReadAToken();
-        if (token->type != token_sign || token->GetSign() != "(") {  //无返回值
+        if (!token->IsSign("(")) {  //无返回值
             //返回值是null
-            return make_AST<AST::FunctionProto>(module, FunctionName, std::move(args), "",
-                                                JudoType(Type_void));
+            return make_AST<AST::FunctionProto>(module, FunctionName, std::move(args),
+                                                std::make_unique<JudoType>(Type_void));
         }
-        token = module->ReadAToken();
-        auto token2 = module->ReadAToken();
-        if (token->type != token_str) {
-            return module->loger->FunctionProtoParseError(
-                    "Once you decided to add a return value,you can't make the () contains nothing");
-        }
-        if (token2->type == token_sign) {   //只是规定了类型
-            if (token2->GetSign() != ")") {
-                return module->loger->FunctionProtoParseError("There must be a ) after the Type of Return");
-            }
-            module->ReadAToken();   //吃掉)
-            return make_AST<AST::FunctionProto>(module, FunctionName, std::move(args), "",
-                                                JudoType(token->GetStr()));
-        }
+        //吃掉(
         module->ReadAToken();
-        return make_AST<AST::FunctionProto>(module, FunctionName, std::move(args), token->GetStr(),
-                                            JudoType(token2->GetStr()));
+        auto type = ParseType(module);
+        if (!type) {
+            return nullptr;
+        }
+        module->ReadAToken();   //吃掉)
+        return make_AST<AST::FunctionProto>(module, FunctionName, std::move(args),
+                                           std::move(type));
     }
 
     int GetTokPrecedence(Module *module) {
@@ -105,10 +96,10 @@ namespace Parser {
                     return module->loger->ParseError("BinOp", "expect ] for [");
                 }
                 module->ReadAToken();   //吃掉]
-                LHS = make_AST<AST::VariableExpr>(module,std::move(LHS),std::move(RHS));
+                LHS = make_AST<AST::VariableExpr>(module, std::move(LHS), std::move(RHS));
             } else {
                 if (BinOp == ".") {
-                    LHS = make_AST<AST::VariableExpr>(module,std::move(RHS));
+                    LHS = make_AST<AST::VariableExpr>(module, std::move(RHS));
                 }
                 LHS = make_AST<AST::BinaryExprAST>(module, BinOp, std::move(LHS),
                                                    std::move(RHS));

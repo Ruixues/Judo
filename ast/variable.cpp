@@ -2,7 +2,7 @@
 #include "../core.h"
 
 namespace AST {
-    llvm::Value* VariableExpr::getRealV() {
+    llvm::Value *VariableExpr::getRealV() {
         if (!lv) {  //单纯的变量
             return module->GetNamedValue(name);
         }
@@ -12,7 +12,7 @@ namespace AST {
             module->loger->GenCodeError("expect a variable to access");
             return nullptr;
         }
-        auto ll = la->genCode(),rr = index->genCode();
+        auto ll = la->genCode(), rr = index->genCode();
         if (!ll->getType()->isPointerTy()) {
             module->loger->GenCodeError("expect pointer for [] to index");
             return nullptr;
@@ -22,13 +22,15 @@ namespace AST {
             return nullptr;
         }
         //开始索引
-        return module->Builder.CreateGEP(ll,rr);
+        return module->Builder.CreateGEP(ll, rr);
     }
+
     llvm::Value *VariableExpr::genCode() {
         if (!name.empty()) {
             auto tt = module->GetNamedValue(name);
             if (tt->getType()->getPointerElementType()->isArrayTy()) {
-                return module->Builder.CreateBitCast(tt,llvm::PointerType::get(tt->getType()->getPointerElementType()->getArrayElementType(),0));
+                return module->Builder.CreateBitCast(tt, llvm::PointerType::get(
+                        tt->getType()->getPointerElementType()->getArrayElementType(), 0));
             }
         }
         return module->Builder.CreateLoad(getRealV());
@@ -58,11 +60,13 @@ namespace AST {
             if (module->globalVariable.find(name) != module->globalVariable.end()) {
                 return module->loger->GenCodeError("global variable:" + name + " has been defined");
             }
-            module->globalVariable [name] = new llvm::GlobalVariable (*(module->module.get()),valType,false,llvm::GlobalValue::LinkageTypes::ExternalLinkage,llvm::ConstantAggregateZero::get(valType),name);
-            auto var = module->globalVariable [name];
+            module->globalVariable[name] = new llvm::GlobalVariable(*(module->module.get()), valType, false,
+                                                                    llvm::GlobalValue::LinkageTypes::ExternalLinkage,
+                                                                    llvm::ConstantAggregateZero::get(valType), name);
+            auto var = module->globalVariable[name];
             var->setAlignment(llvm::MaybeAlign(4));
-            module->SetNamedValue(name,var);
-            return module->Builder.CreateLoad(var,name);
+            module->SetNamedValue(name, var);
+            return module->Builder.CreateLoad(var, name);
         } else {
             v = module->CreateAlloca(module->Builder.GetInsertBlock()->getParent(), name, valType);
             if (value) {

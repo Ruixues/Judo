@@ -37,12 +37,14 @@ enum Token {
     token_break = 14,
     token_continue = 15,
     token_import = 16,
+    token_class = 17,
 };
 
 #include <iostream>
 
 static bool isAllowed(std::string str) {
-    static std::set<std::string> t = {"." ,"{", "}", "(", ")", "+", "-", "*", "/", "%", ":", ";", "=", "==", "!=", "[", "]"};
+    static std::set<std::string> t = {".", "{", "}", "(", ")", "+", "-", "*", "/", "%", ":", ";", "=", "==", "!=", "[",
+                                      "]"};
     return t.find(str) != t.end();
 }
 

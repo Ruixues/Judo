@@ -57,7 +57,7 @@ std::unique_ptr<AST::ExprAST> Module::HandleToken(std::shared_ptr<RToken> token)
         case token_extern:
             return Parser::ParseExtern(this);
         case token_var:
-            return Parser::ParserVariableDefine(this,true);
+            return Parser::ParserVariableDefine(this, true);
         case token_import:
             return Parser::ParseImport(this);
     }
@@ -104,7 +104,7 @@ llvm::Function *Module::getFunction(std::string Name) {
 }
 
 llvm::Value *Module::CreateAlloca(llvm::Function *Function,
-                                       const std::string &Name, llvm::Type *type) {
+                                  const std::string &Name, llvm::Type *type) {
     if (!Function) {
 
     }
@@ -150,6 +150,7 @@ void Module::ExitScope() {
     }
     ScopeVariables.pop();
 }
+
 Module::~Module() {
 
 }

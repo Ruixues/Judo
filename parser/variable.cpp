@@ -2,7 +2,7 @@
 #include "function.h"
 
 namespace Parser {
-    std::unique_ptr<AST::ExprAST> ParserVariableDefine(Module *module,bool global) {
+    std::unique_ptr<AST::ExprAST> ParserVariableDefine(Module *module, bool global) {
         if (module->nowToken->type != token_var) {
             return module->loger->ParseError("Variable Define", "unexpected call to ParseVariableDefine");
         }
@@ -42,7 +42,7 @@ namespace Parser {
                                                  "expect the type of variable or the initial value");
             }
             return make_AST<AST::VariableDefine>(module, name->GetStr(), nullptr, JudoType(type->GetStr()),
-                                                 std::move(level),global);
+                                                 std::move(level), global);
         }
         //有默认值
         module->ReadAToken();   //吃掉=
@@ -50,9 +50,9 @@ namespace Parser {
         if (!initialValue) return nullptr;
         if (!type) {
             return make_AST<AST::VariableDefine>(module, name->GetStr(), std::move(initialValue),
-                                                 JudoType(Type_Undefined), std::move(level),global);
+                                                 JudoType(Type_Undefined), std::move(level), global);
         }
         return make_AST<AST::VariableDefine>(module, name->GetStr(), std::move(initialValue), JudoType(type->GetStr()),
-                                             std::move(level),global);
+                                             std::move(level), global);
     }
 }

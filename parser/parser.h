@@ -12,4 +12,5 @@
 #include "break.h"
 #include "import.h"
 #include "return.h"
+#include "type.h"
 #include <memory>
