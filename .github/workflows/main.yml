@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Chang Target
-        working-directory: ${{runner.workspace}}
+
         run: |
           git config --global user.email "1263592223@qq.com"
           git config --global user.name "Dorbmon"
