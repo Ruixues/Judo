@@ -23,9 +23,10 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Chang Target
+        working-directory: ${{runner.workspace}}
         run: |
-          git remote remove master
-          git remote set-url master https://gitee.com/dorbmon/judo-language
+          git remote remove origin
+          git remote set-url origin https://gitee.com/dorbmon/judo-language
           git config --global user.email "1263592223@qq.com"
           git config --global user.name "Dorbmon"
           git add .
