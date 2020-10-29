@@ -19,6 +19,8 @@ const std::set<std::string> Keywords = {
         "extern",
         "if",
         "else",
+        "for",
+        "class"
 };
 enum Token {
     token_var = 1,
@@ -40,7 +42,6 @@ enum Token {
     token_class = 17,
 };
 
-#include <iostream>
 
 static bool isAllowed(std::string str) {
     static std::set<std::string> t = {".", "{", "}", "(", ")", "+", "-", "*", "/", "%", ":", ";", "=", "==", "!=", "[",

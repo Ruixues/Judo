@@ -26,7 +26,7 @@ public:
     std::shared_ptr<RToken> nowToken;
     llvm::IRBuilder<> Builder;
     std::unique_ptr<llvm::Module> module;
-    std::map<std::string, llvm::Type *> structTypes;
+    JudoTypeSystem Type;
 
     llvm::Function *getFunction(std::string Name);
 

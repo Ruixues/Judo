@@ -13,4 +13,5 @@
 #include "import.h"
 #include "return.h"
 #include "type.h"
+#include "class.h"
 #include <memory>

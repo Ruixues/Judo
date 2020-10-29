@@ -7,10 +7,10 @@ namespace AST {
     llvm::Function *FunctionProto::genFunction() {
         std::vector<llvm::Type *> argTypes;
         for (auto &arg:args) {
-            argTypes.push_back(arg->type.getType(module->core->context));
+            argTypes.push_back(arg->type);
         }
         llvm::FunctionType *FT =
-                llvm::FunctionType::get(returnType->getType(module->core->context), argTypes, false);
+                llvm::FunctionType::get(returnType, argTypes, false);
         llvm::Function *F =
                 llvm::Function::Create(FT, llvm::Function::ExternalLinkage, name, module->module.get());
         size_t index = 0;

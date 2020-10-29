@@ -35,7 +35,7 @@ namespace Parser {
             if (type->type != token_str) {
                 return module->loger->FunctionProtoParseError("There must be the Type Name after the name of variable");
             }
-            args.push_back(std::make_unique<AST::FunctionArg>(JudoType(type->strData), name));
+            args.push_back(std::make_unique<AST::FunctionArg>(module->Type.GetType(type->strData), name));
             token = module->ReadAToken();
         }
         //开始处理返回值
@@ -46,7 +46,7 @@ namespace Parser {
         if (!token->IsSign("(")) {  //无返回值
             //返回值是null
             return make_AST<AST::FunctionProto>(module, FunctionName, std::move(args),
-                                                std::make_unique<JudoType>(Type_void));
+                                                nullptr);
         }
         //吃掉(
         module->ReadAToken();

@@ -1,5 +1,3 @@
-#pragma once
-
 #include "break.h"
 #include "../core.h"
 

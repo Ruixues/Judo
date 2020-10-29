@@ -1,6 +1,6 @@
 #include "variableDefine.h"
 #include "function.h"
-
+#include "type.h"
 namespace Parser {
     std::unique_ptr<AST::ExprAST> ParserVariableDefine(Module *module, bool global) {
         if (module->nowToken->type != token_var) {
@@ -12,12 +12,13 @@ namespace Parser {
         }
         //开始获取类型
         auto token = module->ReadAToken();
-        std::shared_ptr<RToken> type;
+        llvm::Type* type;
         std::vector<size_t> level;
         if (token->IsSign(":")) {
             //那就是指定了类型
-            type = module->ReadAToken();    //吃掉了:
-            if (type->type != token_str) {
+            //type = module->ReadAToken();    //吃掉了:
+            type = ParseType(module);
+            if (!type) {
                 return module->loger->ParseError("Variable Define",
                                                  "expect to get the type of the variable after ':'");
             }
@@ -41,18 +42,14 @@ namespace Parser {
                 return module->loger->ParseError("Variable Define",
                                                  "expect the type of variable or the initial value");
             }
-            return make_AST<AST::VariableDefine>(module, name->GetStr(), nullptr, JudoType(type->GetStr()),
+            return make_AST<AST::VariableDefine>(module, name->GetStr(), nullptr, type,
                                                  std::move(level), global);
         }
         //有默认值
         module->ReadAToken();   //吃掉=
         auto initialValue = ParsePrimary(module);   //获取初始值
         if (!initialValue) return nullptr;
-        if (!type) {
-            return make_AST<AST::VariableDefine>(module, name->GetStr(), std::move(initialValue),
-                                                 JudoType(Type_Undefined), std::move(level), global);
-        }
-        return make_AST<AST::VariableDefine>(module, name->GetStr(), std::move(initialValue), JudoType(type->GetStr()),
+        return make_AST<AST::VariableDefine>(module, name->GetStr(), std::move(initialValue),type,
                                              std::move(level), global);
     }
 }

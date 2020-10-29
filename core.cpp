@@ -32,7 +32,7 @@ void Module::Parse() {
     }
 }
 
-Module::Module(std::string file, Judo *core) : Builder(core->context), core(core) {
+Module::Module(std::string file, Judo *core) : Builder(core->context), core(core) , Type (this) {
     this->file.open(file, std::ios::in);
     if (!this->file.good()) {
         std::cout << "Open Module " << file << " Error" << std::endl;
@@ -60,6 +60,8 @@ std::unique_ptr<AST::ExprAST> Module::HandleToken(std::shared_ptr<RToken> token)
             return Parser::ParserVariableDefine(this, true);
         case token_import:
             return Parser::ParseImport(this);
+        case token_class:
+            return Parser::ParseClass(this);
     }
     return loger->ParseError("Core", "unexpected token type:" + std::to_string(token->type));
 }

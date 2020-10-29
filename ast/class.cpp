@@ -10,10 +10,12 @@ namespace AST {
         std::vector<llvm::Type *> elements;
         for (auto &v:publics) {
             if (v->type != Variable) continue;
-            elements.push_back((llvm::Type *) (v->variable->type.getType(module->core->context)));
+            elements.push_back((llvm::Type *) (v->variable->type));
         }
         type->setBody(elements);
-        module->structTypes[name] = type;
+        if (!module->Type.BindType(name, type)) {
+            return module->loger->GenCodeError("Can't bind class:" + name + " to Judo System");
+        }
         return llvm::ConstantInt::getTrue(module->core->context);
     }
 }

@@ -10,21 +10,21 @@ namespace AST {
     // 函数参数
     class FunctionArg {
     public:
-        JudoType type;
+        llvm::Type* type;
         std::string name;
 
-        FunctionArg(JudoType type, std::string name) : type(type), name(name) {}
+        FunctionArg(llvm::Type* type, std::string name) : type(type), name(name) {}
     };
 
     class FunctionProto : public ExprAST {
     public:
         std::string name;
         std::vector<std::unique_ptr<FunctionArg>> args;
-        std::unique_ptr<JudoType> returnType;
+        llvm::Type* returnType;
 
         FunctionProto(std::string name, std::vector<std::unique_ptr<FunctionArg>> args,
-                      std::unique_ptr<JudoType> returnType) : name(name), args(std::move(args)),
-                                                              returnType(std::move(returnType)) {
+                      llvm::Type* returnType) : name(name), args(std::move(args)),
+                                                              returnType(returnType) {
         }
 
         llvm::Value *genCode() {

@@ -44,15 +44,13 @@ namespace AST {
             initV = value->genCode();
             if (!initV) return nullptr;
         }
-        llvm::Type *valType;
-        if (type.isType(Type_Undefined)) {
+        if (!type) {
             //需要自己生成类型
-            valType = initV->getType();
+            type = initV->getType();
         } else {
-            valType = type.getType(module->core->context);
             if (!levelSize.empty()) {
                 for (auto size:levelSize) {
-                    valType = llvm::ArrayType::get(valType, size);
+                    type = llvm::ArrayType::get(type, size);
                 }
             }
         }
@@ -60,15 +58,15 @@ namespace AST {
             if (module->globalVariable.find(name) != module->globalVariable.end()) {
                 return module->loger->GenCodeError("global variable:" + name + " has been defined");
             }
-            module->globalVariable[name] = new llvm::GlobalVariable(*(module->module.get()), valType, false,
+            module->globalVariable[name] = new llvm::GlobalVariable(*(module->module.get()), type, false,
                                                                     llvm::GlobalValue::LinkageTypes::ExternalLinkage,
-                                                                    llvm::ConstantAggregateZero::get(valType), name);
+                                                                    llvm::ConstantAggregateZero::get(type), name);
             auto var = module->globalVariable[name];
             var->setAlignment(llvm::MaybeAlign(4));
             module->SetNamedValue(name, var);
             return module->Builder.CreateLoad(var, name);
         } else {
-            v = module->CreateAlloca(module->Builder.GetInsertBlock()->getParent(), name, valType);
+            v = module->CreateAlloca(module->Builder.GetInsertBlock()->getParent(), name, type);
             if (value) {
                 module->Builder.CreateStore(initV, v);
             }
