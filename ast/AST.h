@@ -25,3 +25,12 @@ std::unique_ptr<T> make_AST(Module *module, _Args &&... __args) {
     tmp->SetModule(module);
     return tmp;
 }
+
+template<typename T, typename S>
+std::unique_ptr<T> dynamic_pass(std::unique_ptr<S> source) {
+    T *tmp = dynamic_cast<T *> (source.get());
+    source.release();
+    std::unique_ptr<T> ret;
+    ret.reset(tmp);
+    return ret;
+}

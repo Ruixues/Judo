@@ -13,6 +13,7 @@
 #include "break.h"
 #include "return.h"
 #include "type.h"
+
 namespace Parser {
     std::unique_ptr<AST::FunctionProto> ParseFunctionProto(Module *module) {
         if (module->nowToken->type != token_str) {
@@ -55,7 +56,7 @@ namespace Parser {
         }
         module->ReadAToken();   //吃掉)
         return make_AST<AST::FunctionProto>(module, FunctionName, std::move(args),
-                                           std::move(type));
+                                            std::move(type));
     }
 
     int GetTokPrecedence(Module *module) {

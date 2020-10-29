@@ -2,7 +2,7 @@
 #include "../core.h"
 
 namespace Parser {
-    std::unique_ptr<JudoType> ParseType(Module* module) {
+    std::unique_ptr<JudoType> ParseType(Module *module) {
         if (module->nowToken->type != token_str) {
             return nullptr;
         }

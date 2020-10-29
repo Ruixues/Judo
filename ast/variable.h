@@ -36,6 +36,7 @@ namespace AST {
         std::vector<size_t> levelSize;  //每一维的大小，数组才需要提供
     public:
         JudoType type;
+
         VariableDefine(const std::string &name, std::unique_ptr<ExprAST> value, JudoType type,
                        std::vector<size_t> level, bool isGlobal) : name(name),
                                                                    value(std::move(

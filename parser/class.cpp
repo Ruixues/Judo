@@ -2,22 +2,30 @@
 #include "../core.h"
 #include "../ast/class.h"
 #include "variableDefine.h"
+
 namespace Parser {
     std::unique_ptr<AST::ClassItem> ParseClassItem(Module *module) {
         //目前只支持成员变量
         if (module->nowToken->type != token_var) {
-            module->loger->ParseError("Class Item","unsupported item type");
+            module->loger->ParseError("Class Item", "unsupported item type");
             return nullptr;
         }
-        auto var = ParserVariableDefine(module,false);
+        auto var = ParserVariableDefine(module, false);
         if (!var) {
             return nullptr;
         }
-
+        auto item = std::make_unique<AST::ClassItem>(std::move(dynamic_pass<AST::VariableDefine>(std::move(var))));
+        return item;
     }
 
     std::unique_ptr<AST::ExprAST> ParseClass(Module *module) {
         auto token = module->ReadAToken();   //吃掉class
+        std::string name;
+        if (token->type != token_str) {
+            return module->loger->ParseError("Class", "expect name for class");
+        }
+        name = token->GetStr();
+        token = module->ReadAToken();
         if (!token->IsSign("{")) {
             return module->loger->ParseError("Class", "expect { for class");
         }
@@ -30,6 +38,6 @@ namespace Parser {
             }
             items.push_back(std::move(tmp));
         }
-
+        return make_AST<AST::ClassAST>(module, name, std::move(items));
     }
 }

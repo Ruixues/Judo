@@ -24,7 +24,7 @@ namespace AST {
 
         FunctionProto(std::string name, std::vector<std::unique_ptr<FunctionArg>> args,
                       std::unique_ptr<JudoType> returnType) : name(name), args(std::move(args)),
-                                             returnType(std::move(returnType)) {
+                                                              returnType(std::move(returnType)) {
         }
 
         llvm::Value *genCode() {

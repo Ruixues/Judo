@@ -2,6 +2,7 @@
 
 #include "AST.h"
 #include "variable.h"
+
 namespace AST {
     enum ClassItemType {
         Variable = 0,
@@ -13,18 +14,17 @@ namespace AST {
         ClassItemType type;
         std::unique_ptr<AST::VariableDefine> variable;
 
-        ClassItem(ClassItemType type, std::unique_ptr<AST::VariableDefine> v) : type(type), variable(std::move (v)) {}
+        ClassItem(std::unique_ptr<AST::VariableDefine> v) : variable(std::move(v)), type(Variable) {}
     };
 
     class ClassAST : public ExprAST {
     private:
         std::string name;
-        std::vector<ClassItem> privates, publics;
+        std::vector<std::unique_ptr<ClassItem>> privates, publics;
     public:
-        ClassAST(std::string name, std::vector<ClassItem> privates, std::vector<ClassItem> publics) : name(name),
-                                                                                                      privates(
-                                                                                                              std::move(privates)),
-                                                                                                      publics(std::move(publics)) {}
+        ClassAST(std::string name, std::vector<std::unique_ptr<ClassItem>> publics) : name(name),
+
+                                                                                      publics(std::move(publics)) {}
 
         llvm::Value *genCode();
     };

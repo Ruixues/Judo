@@ -9,8 +9,8 @@ namespace AST {
         auto type = llvm::StructType::create(module->core->context, name);
         std::vector<llvm::Type *> elements;
         for (auto &v:publics) {
-            if (v.type != Variable) continue ;
-            elements.push_back((llvm::Type *) (v.variable->type.getType(module->core->context)));
+            if (v->type != Variable) continue;
+            elements.push_back((llvm::Type *) (v->variable->type.getType(module->core->context)));
         }
         type->setBody(elements);
         module->structTypes[name] = type;
