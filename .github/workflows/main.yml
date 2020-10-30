@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Chang Target
-        working-directory: ${{ GITHUB_WORKSPACE }}
+        working-directory: $GITHUB_WORKSPACE
         run: |
           git remote rm origin
           git remote add origin https://dorbmon:${{ secrets.GITEEPASSWORD }}@gitee.com/dorbmon/judo-language.git
