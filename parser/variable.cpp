@@ -1,6 +1,7 @@
 #include "variableDefine.h"
 #include "function.h"
 #include "type.h"
+
 namespace Parser {
     std::unique_ptr<AST::ExprAST> ParserVariableDefine(Module *module, bool global) {
         if (module->nowToken->type != token_var) {
@@ -12,11 +13,11 @@ namespace Parser {
         }
         //开始获取类型
         auto token = module->ReadAToken();
-        llvm::Type* type;
+        std::unique_ptr<JudoTypeRef> type;
         std::vector<size_t> level;
         if (token->IsSign(":")) {
             //那就是指定了类型
-            //type = module->ReadAToken();    //吃掉了:
+            module->ReadAToken();    //吃掉了:
             type = ParseType(module);
             if (!type) {
                 return module->loger->ParseError("Variable Define",
@@ -42,14 +43,14 @@ namespace Parser {
                 return module->loger->ParseError("Variable Define",
                                                  "expect the type of variable or the initial value");
             }
-            return make_AST<AST::VariableDefine>(module, name->GetStr(), nullptr, type,
+            return make_AST<AST::VariableDefine>(module, name->GetStr(), nullptr, std::move(type),
                                                  std::move(level), global);
         }
         //有默认值
         module->ReadAToken();   //吃掉=
         auto initialValue = ParsePrimary(module);   //获取初始值
         if (!initialValue) return nullptr;
-        return make_AST<AST::VariableDefine>(module, name->GetStr(), std::move(initialValue),type,
+        return make_AST<AST::VariableDefine>(module, name->GetStr(), std::move(initialValue), std::move(type),
                                              std::move(level), global);
     }
 }

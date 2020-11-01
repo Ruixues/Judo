@@ -38,35 +38,36 @@ namespace AST {
 
     llvm::Value *VariableDefine::genCode() {
         //生成一个变量
+        std::cout << "Here:" << std::endl;
         llvm::Value *v;
         llvm::Value *initV;
+        llvm::Type* ttype;
         if (value) {
             initV = value->genCode();
             if (!initV) return nullptr;
         }
         if (!type) {
             //需要自己生成类型
-            type = initV->getType();
+            ttype = initV->getType();
         } else {
-            if (!levelSize.empty()) {
-                for (auto size:levelSize) {
-                    type = llvm::ArrayType::get(type, size);
-                }
+            ttype = type->ToType();
+            for (auto size:levelSize) {
+                ttype = llvm::ArrayType::get(ttype, size);
             }
         }
         if (isGlobal) { //全局变量特殊处理
             if (module->globalVariable.find(name) != module->globalVariable.end()) {
                 return module->loger->GenCodeError("global variable:" + name + " has been defined");
             }
-            module->globalVariable[name] = new llvm::GlobalVariable(*(module->module.get()), type, false,
+            module->globalVariable[name] = new llvm::GlobalVariable(*(module->module.get()), ttype, false,
                                                                     llvm::GlobalValue::LinkageTypes::ExternalLinkage,
-                                                                    llvm::ConstantAggregateZero::get(type), name);
+                                                                    llvm::ConstantAggregateZero::get(ttype), name);
             auto var = module->globalVariable[name];
             var->setAlignment(llvm::MaybeAlign(4));
             module->SetNamedValue(name, var);
             return module->Builder.CreateLoad(var, name);
         } else {
-            v = module->CreateAlloca(module->Builder.GetInsertBlock()->getParent(), name, type);
+            v = module->CreateAlloca(module->Builder.GetInsertBlock()->getParent(), name, ttype);
             if (value) {
                 module->Builder.CreateStore(initV, v);
             }

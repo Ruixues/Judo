@@ -35,13 +35,12 @@ namespace AST {
         bool isGlobal = false;
         std::vector<size_t> levelSize;  //每一维的大小，数组才需要提供
     public:
-        llvm::Type* type;
-
-        VariableDefine(const std::string &name, std::unique_ptr<ExprAST> value, llvm::Type* type,
+        std::unique_ptr<JudoTypeRef> type;
+        VariableDefine(const std::string &name, std::unique_ptr<ExprAST> value, std::unique_ptr<JudoTypeRef> type,
                        std::vector<size_t> level, bool isGlobal) : name(name),
                                                                    value(std::move(
                                                                            value)), levelSize(std::move(level)),
-                                                                   type(type), isGlobal(isGlobal) {}
+                                                                   type(std::move(type)), isGlobal(isGlobal) {}
 
         llvm::Value *genCode();
     };

@@ -3,9 +3,9 @@ cmake_minimum_required(VERSION 3.1)
 
 # 项目信息
 
-SET(CMAKE_C_COMPILER clang)
-SET(CMAKE_CXX_COMPILER clang++)
-option(LLVM_ENABLE_LLD ON)   #使用LLD作为链接器
+#SET(CMAKE_C_COMPILER clang)
+#SET(CMAKE_CXX_COMPILER clang++)
+#option(LLVM_ENABLE_LLD ON)   #使用LLD作为链接器
 #SET(CMAKE_C_COMPILER gcc)
 #SET(CMAKE_CXX_COMPILER g++)
 project(Judo)
@@ -13,7 +13,6 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(LLVM REQUIRED CONFIG)
-message(STATUS "include path: ${LLVM_INCLUDE_DIRS}")
 include_directories(${LLVM_INCLUDE_DIRS})
 add_definitions(${LLVM_DEFINITIONS})
 

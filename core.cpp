@@ -32,7 +32,7 @@ void Module::Parse() {
     }
 }
 
-Module::Module(std::string file, Judo *core) : Builder(core->context), core(core) , Type (this) {
+Module::Module(std::string file, Judo *core) : Builder(core->context), core(core), Type(this) {
     this->file.open(file, std::ios::in);
     if (!this->file.good()) {
         std::cout << "Open Module " << file << " Error" << std::endl;

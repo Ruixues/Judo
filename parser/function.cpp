@@ -46,7 +46,7 @@ namespace Parser {
         if (!token->IsSign("(")) {  //无返回值
             //返回值是null
             return make_AST<AST::FunctionProto>(module, FunctionName, std::move(args),
-                                                nullptr);
+                                                std::make_unique<JudoTypeRef>(module,Type_void));
         }
         //吃掉(
         module->ReadAToken();

@@ -10,7 +10,7 @@ namespace AST {
             argTypes.push_back(arg->type);
         }
         llvm::FunctionType *FT =
-                llvm::FunctionType::get(returnType, argTypes, false);
+                llvm::FunctionType::get(returnType->ToType(), argTypes, false);
         llvm::Function *F =
                 llvm::Function::Create(FT, llvm::Function::ExternalLinkage, name, module->module.get());
         size_t index = 0;

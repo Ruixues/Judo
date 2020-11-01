@@ -4,5 +4,5 @@
 
 class Module;
 namespace Parser {
-    llvm::Type* ParseType(Module *module);
+    std::unique_ptr<JudoTypeRef> ParseType(Module *module);
 }
