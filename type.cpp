@@ -51,6 +51,6 @@ llvm::Type *JudoTypeSystem::GetType(std::string name) {
     return rlink[name];
 }
 llvm::Type* JudoTypeRef::ToType () {
-    if (!pack) return pack;
+    if (pack) return pack;
     return module->Type.GetType(type);
 }

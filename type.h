@@ -3,7 +3,7 @@
 // 内置类型 (后期实现类之后使用类替代)
 #include <string>
 #include "llvmInclude.h"
-
+#include <unordered_map>
 #define int32 int32_t
 #define int64 int64_t
 enum BuiltinType {
@@ -29,7 +29,7 @@ public:
 class JudoTypeSystem {
 private:
     Module *module;
-    std::map<std::string, llvm::Type *> rlink;
+    std::unordered_map<std::string, llvm::Type *> rlink;
 
     llvm::Type *getBuiltInType(std::string TypeName);
 

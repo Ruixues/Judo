@@ -38,7 +38,6 @@ namespace AST {
 
     llvm::Value *VariableDefine::genCode() {
         //生成一个变量
-        std::cout << "Here:" << std::endl;
         llvm::Value *v;
         llvm::Value *initV;
         llvm::Type* ttype;

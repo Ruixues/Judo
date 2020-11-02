@@ -12,6 +12,10 @@ void Module::Parse() {
             break;
         }
         auto tmp = HandleToken(nowToken);
+        if (!tmp) {
+            std::cout << "Generate code error." << std::endl;
+            return ;
+        }
         tmp->genCode();
     }
     ExitScope();

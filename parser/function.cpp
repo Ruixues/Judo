@@ -191,8 +191,10 @@ namespace Parser {
         //开始解析函数内部
         auto inside = ParseExpression(module);
         if (!inside) {
+            std::cout << "Here" << std::endl;
             return nullptr;
         }
+
         return make_AST<AST::FunctionAST>(module, std::move(proto), std::move(inside));
     }
 }
