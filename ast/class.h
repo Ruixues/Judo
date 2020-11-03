@@ -19,11 +19,10 @@ namespace AST {
 
     class ClassAST : public ExprAST {
     private:
+    public:
         std::string name;
         std::vector<std::unique_ptr<ClassItem>> privates, publics;
-    public:
         ClassAST(std::string name, std::vector<std::unique_ptr<ClassItem>> publics) : name(name),
-
                                                                                       publics(std::move(publics)) {}
 
         llvm::Value *genCode();

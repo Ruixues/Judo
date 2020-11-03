@@ -100,10 +100,11 @@ namespace Parser {
                 LHS = make_AST<AST::VariableExpr>(module, std::move(LHS), std::move(RHS));
             } else {
                 if (BinOp == ".") {
-                    LHS = make_AST<AST::VariableExpr>(module, std::move(RHS));
+                    LHS = make_AST<AST::VariableExpr>(module,std::move (LHS), std::move(RHS),true);
+                } else {
+                    LHS = make_AST<AST::BinaryExprAST>(module, BinOp, std::move(LHS),
+                                                       std::move(RHS));
                 }
-                LHS = make_AST<AST::BinaryExprAST>(module, BinOp, std::move(LHS),
-                                                   std::move(RHS));
             }
         }
     }

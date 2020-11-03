@@ -1,6 +1,6 @@
 #include "type.h"
 #include "core.h"
-
+#include "ast/class.h"
 JudoTypeSystem::JudoTypeSystem(Module *module) : module(module) {
 
 }
@@ -53,4 +53,16 @@ llvm::Type *JudoTypeSystem::GetType(std::string name) {
 llvm::Type* JudoTypeRef::ToType () {
     if (pack) return pack;
     return module->Type.GetType(type);
+}
+bool JudoTypeSystem::BindClass (std::string name,AST::ClassAST* JudoClass) {
+    if (rclass.find(name) != rclass.end()) {
+        return false;
+    }
+    rclass [name] = JudoClass;
+    return true;
+}
+AST::ClassAST* JudoTypeSystem::getClass (std::string name) {
+    auto v = rclass.find(name);
+    if (v == rclass.end()) return nullptr;
+    return v->second;
 }

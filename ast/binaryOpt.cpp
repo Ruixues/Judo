@@ -5,6 +5,7 @@
 namespace AST {
     std::map<std::string, int> BinopPrecedence = {
             {"[",  1},
+            {".",1},
             {"]",  1},
             {"==", 7},
             {"!=", 7},

@@ -23,7 +23,6 @@ namespace Parser {
                 return module->loger->ParseError("Variable Define",
                                                  "expect to get the type of the variable after ':'");
             }
-            module->ReadAToken();   //吃掉:
             while (module->nowToken->IsSign("[")) { //是数组
                 auto num = module->ReadAToken();
                 if (num->type != token_int) {
@@ -34,7 +33,7 @@ namespace Parser {
                 if (!module->nowToken->IsSign("]")) {
                     return module->loger->ParseError("Variable Define", "expect ]");
                 }
-                module->ReadAToken();   //吃掉[
+                module->ReadAToken();   //吃掉]
             }
         }
         if (!token->IsSign("=")) {  //那就是没有默认值

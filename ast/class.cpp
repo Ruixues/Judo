@@ -13,7 +13,7 @@ namespace AST {
             elements.push_back(v->variable->type->ToType());
         }
         type->setBody(elements);
-        if (!module->Type.BindType(name, type)) {
+        if (!module->Type.BindType(name, type) || !module->Type.BindClass(name, this)) {
             return module->loger->GenCodeError("Can't bind class:" + name + " to Judo System");
         }
         return llvm::ConstantInt::getTrue(module->core->context);

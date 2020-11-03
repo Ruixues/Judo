@@ -26,11 +26,14 @@ public:
     JudoTypeRef(Module* module,llvm::Type* type):pack (type) {}
     llvm::Type* ToType ();
 };
+namespace AST {
+    class ClassAST;
+}
 class JudoTypeSystem {
 private:
     Module *module;
     std::unordered_map<std::string, llvm::Type *> rlink;
-
+    std::unordered_map<std::string, AST::ClassAST*> rclass;
     llvm::Type *getBuiltInType(std::string TypeName);
 
 public:
@@ -41,4 +44,6 @@ public:
     llvm::Type *GetBuiltInType(BuiltinType type);
 
     llvm::Type *GetType(std::string name);
+    AST::ClassAST* getClass (std::string name);
+    bool BindClass (std::string name,AST::ClassAST* JudoClass);
 };

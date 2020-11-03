@@ -19,13 +19,11 @@ namespace Parser {
     }
 
     std::unique_ptr<AST::ExprAST> ParseClass(Module *module) {
-        module->ReadAToken();    //吃掉class
-        auto token = module->nowToken;
-        std::string name;
+        auto token = module->ReadAToken();    //吃掉class
         if (token->type != token_str) {
             return module->loger->ParseError("Class", "expect name for class");
         }
-        name = token->GetStr();
+        std::string name = token->GetStr();
         token = module->ReadAToken();
         if (!token->IsSign("{")) {
             return module->loger->ParseError("Class", "expect { for class");

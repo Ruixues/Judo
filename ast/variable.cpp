@@ -6,6 +6,9 @@ namespace AST {
         if (!lv) {  //单纯的变量
             return module->GetNamedValue(name);
         }
+        if (structIndex) {  //是结构体索引
+            return getStructElementPtr();
+        }
         //否则那就索引数组
         auto la = dynamic_cast<VariableExpr *>(lv.get());
         if (!la) {
@@ -24,7 +27,27 @@ namespace AST {
         //开始索引
         return module->Builder.CreateGEP(ll, rr);
     }
+    llvm::Value* VariableExpr::getStructElementPtr () {
+        //开始向类型系统请求类
+        auto l = lv->genCode();
+        if (!l) {
+            return nullptr;
+        }
+        if (!l->getType()->isStructTy()) {
+            return module->loger->GenCodeError("expect struct to access by '.'");
+        }
+        auto name = l->getType()->getStructName();
+        auto rclass = module->Type.getClass(name);
+        if (!rclass) {
+            return module->loger->GenCodeError("undefined class:" + std::string(name));
+        }
+        auto index = dynamic_cast<VariableExpr*>(structIndex.get());
+        if (!index) {
+            return module->loger->GenCodeError("expect string to access the struct by '.'");
+        }
+        //开始获取这个段的位置
 
+    }
     llvm::Value *VariableExpr::genCode() {
         if (!name.empty()) {
             auto tt = module->GetNamedValue(name);
