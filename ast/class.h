@@ -13,7 +13,7 @@ namespace AST {
     public:
         ClassItemType type;
         std::unique_ptr<AST::VariableDefine> variable;
-
+        ~ClassItem() = default;
         ClassItem(std::unique_ptr<AST::VariableDefine> v) : variable(std::move(v)), type(Variable) {}
     };
 
@@ -23,7 +23,8 @@ namespace AST {
         std::string name;
         std::vector<std::unique_ptr<ClassItem>> privates, publics;
         ClassAST(std::string name, std::vector<std::unique_ptr<ClassItem>> publics) : name(name),
-                                                                                      publics(std::move(publics)) {}
+                                                                                      publics(std::move(publics)) {
+        }
 
         llvm::Value *genCode();
     };

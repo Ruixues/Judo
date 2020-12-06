@@ -13,7 +13,13 @@ namespace AST {
             elements.push_back(v->variable->type->ToType());
         }
         type->setBody(elements);
-        if (!module->Type.BindType(name, type) || !module->Type.BindClass(name, this)) {
+        if (!module->Type.BindType(name, type)) {
+            return module->loger->GenCodeError("Can't bind class:" + name + " to Judo System");
+        }
+        auto mate = std::make_unique<JudoClassMateData> ();
+        mate->publics = std::move (publics);
+        mate->privates = std::move (privates);
+        if (!module->Type.BindClass(name, std::move (mate))) {
             return module->loger->GenCodeError("Can't bind class:" + name + " to Judo System");
         }
         return llvm::ConstantInt::getTrue(module->core->context);

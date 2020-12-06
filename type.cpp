@@ -4,6 +4,7 @@
 JudoTypeSystem::JudoTypeSystem(Module *module) : module(module) {
 
 }
+JudoClassMateData::~JudoClassMateData() = default;
 JudoTypeRef::JudoTypeRef(Module* module,BuiltinType type) {
     pack = module->Type.GetBuiltInType(type);
 }
@@ -54,15 +55,15 @@ llvm::Type* JudoTypeRef::ToType () {
     if (pack) return pack;
     return module->Type.GetType(type);
 }
-bool JudoTypeSystem::BindClass (std::string name,AST::ClassAST* JudoClass) {
+bool JudoTypeSystem::BindClass (std::string name,std::unique_ptr<JudoClassMateData> data) {
     if (rclass.find(name) != rclass.end()) {
         return false;
     }
-    rclass [name] = JudoClass;
+    rclass [name] = std::move (data);
     return true;
 }
-AST::ClassAST* JudoTypeSystem::getClass (std::string name) {
+JudoClassMateData* JudoTypeSystem::getClass (std::string name) {
     auto v = rclass.find(name);
     if (v == rclass.end()) return nullptr;
-    return v->second;
+    return v->second.get();
 }

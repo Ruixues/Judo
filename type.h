@@ -13,7 +13,14 @@ enum BuiltinType {
     Type_Undefined = 4,
     Type_int64 = 5,
 };
-
+namespace AST {
+    class ClassItem;
+}
+class JudoClassMateData {   //Core Data of judo class
+public:
+    ~JudoClassMateData();
+    std::vector<std::unique_ptr<AST::ClassItem>> privates, publics;
+};
 class Module;
 class JudoTypeRef { //对类型的指定
 private:
@@ -33,7 +40,7 @@ class JudoTypeSystem {
 private:
     Module *module;
     std::unordered_map<std::string, llvm::Type *> rlink;
-    std::unordered_map<std::string, AST::ClassAST*> rclass;
+    std::unordered_map<std::string, std::unique_ptr<JudoClassMateData>> rclass;
     llvm::Type *getBuiltInType(std::string TypeName);
 
 public:
@@ -44,6 +51,6 @@ public:
     llvm::Type *GetBuiltInType(BuiltinType type);
 
     llvm::Type *GetType(std::string name);
-    AST::ClassAST* getClass (std::string name);
-    bool BindClass (std::string name,AST::ClassAST* JudoClass);
+    JudoClassMateData* getClass (std::string name);
+    bool BindClass (std::string name,std::unique_ptr<JudoClassMateData> data);
 };

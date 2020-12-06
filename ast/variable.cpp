@@ -1,5 +1,6 @@
 #include "variable.h"
 #include "../core.h"
+#include "class.h"
 
 namespace AST {
     llvm::Value *VariableExpr::getRealV() {
@@ -29,6 +30,10 @@ namespace AST {
     }
     llvm::Value* VariableExpr::getStructElementPtr () {
         //开始向类型系统请求类
+        auto lvar = dynamic_cast<AST::VariableExpr*> (lv.get());
+        if (!lvar) {
+            return module->loger->GenCodeError("expect struct to access by '.'");
+        }
         auto l = lv->genCode();
         if (!l) {
             return nullptr;
@@ -46,7 +51,20 @@ namespace AST {
             return module->loger->GenCodeError("expect string to access the struct by '.'");
         }
         //开始获取这个段的位置
-
+        auto itemName = index->GetName();
+        size_t i = 0,got = -1;
+        for (auto &item:rclass->publics) {
+            if (item->variable->GetName() == itemName) {
+                got = i;
+                break ;
+            }
+            ++ i;
+        }
+        if (got == -1) {
+            return module->loger->GenCodeError("unexpected item:" + std::string(itemName) + " of class:" + std::string(name));
+        }
+        std::cout << got << std::endl;
+        return module->Builder.CreateStructGEP(lvar->getRealV(),got);
     }
     llvm::Value *VariableExpr::genCode() {
         if (!name.empty()) {
