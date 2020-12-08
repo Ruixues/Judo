@@ -81,6 +81,23 @@ namespace Parser {
             // 已经确定了可以计算
             std::string BinOp = module->nowToken->GetSign();
             module->ReadAToken();
+            std::cout << "Here" << std::endl;
+            if (BinOp == "(") { //特殊处理，因为有多个参数
+                std::vector<std::unique_ptr<AST::ExprAST>> args;
+                while (true) {
+                    if (module->nowToken->IsSign(")")) {
+                        break;
+                    }
+                    auto tmp = ParseExpression(module);
+                    if (!tmp) {
+                        return tmp;
+                    }
+                    args.push_back(std::move(tmp));
+                }
+                module->ReadAToken();   //吃掉)
+                // 开始构建
+                return make_AST<AST::VariableExpr>(module,std::move(LHS),std::move(args));
+            }
             // 获取操作符的右边第一个
             auto RHS = ParsePrimary(module);
             if (!RHS)
@@ -119,33 +136,33 @@ namespace Parser {
     std::unique_ptr<AST::ExprAST> ParseIdentifierExpr(Module *module) {
         //判断是函数调用还是啥
         std::string strName = module->nowToken->GetStr();
-        auto next = module->ReadAToken();
-        if (!next->IsSign("(")) {
+        //auto next = module->ReadAToken();
+        //if (!next->IsSign("(")) {
             //就是变量
             return make_AST<AST::VariableExpr>(module, strName);
-        }
+        //}
         //否则就是函数调用
         module->ReadAToken();   //吃掉(
         //开始处理参数
-        std::vector<std::unique_ptr<AST::ExprAST>> Args;
-        if (!module->nowToken->IsSign(")")) {
-            //那就是有参数
-            while (true) {
-                if (auto Arg = Parser::ParseExpression(module))
-                    Args.push_back(std::move(Arg));
-                else
-                    return nullptr;
-                if (module->nowToken->IsSign(")")) {
-                    break;
-                }
-                if (!module->nowToken->IsSign(",")) {
-                    return module->loger->ParseError("Function Call", "Expected ')' or ',' in argument list");
-                }
-                module->ReadAToken();   //吃掉分隔符
-            }
-        }
-        module->ReadAToken();   //吃掉)
-        return make_AST<AST::FunctionCall>(module, strName, std::move(Args));
+//        std::vector<std::unique_ptr<AST::ExprAST>> Args;
+//        if (!module->nowToken->IsSign(")")) {
+//            //那就是有参数
+//            while (true) {
+//                if (auto Arg = Parser::ParseExpression(module))
+//                    Args.push_back(std::move(Arg));
+//                else
+//                    return nullptr;
+//                if (module->nowToken->IsSign(")")) {
+//                    break;
+//                }
+//                if (!module->nowToken->IsSign(",")) {
+//                    return module->loger->ParseError("Function Call", "Expected ')' or ',' in argument list");
+//                }
+//                module->ReadAToken();   //吃掉分隔符
+//            }
+//        }
+//        module->ReadAToken();   //吃掉)
+//        return make_AST<AST::FunctionCall>(module, strName, std::move(Args));
     }
 
     std::unique_ptr<AST::ExprAST> ParsePrimary(Module *module) {

@@ -17,7 +17,7 @@ public:
     OpHandler(Module *module) : module(module) {}
 
     static std::string typeToStr(llvm::Type *type) {
-        if (type->isStructTy()) return type->getStructName();
+        if (type->isStructTy()) return std::string(type->getStructName());
         switch (type->getTypeID()) {
             default:
                 return "unknown";

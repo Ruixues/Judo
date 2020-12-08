@@ -11,7 +11,9 @@ namespace AST {
         std::string name;
         std::unique_ptr<AST::ExprAST> lv;  //对于是数组索引的
         std::unique_ptr<AST::ExprAST> index;
-        std::unique_ptr<AST::ExprAST> structIndex;  //索引.
+        std::unique_ptr<AST::ExprAST> structIndex;  //索引
+        std::unique_ptr<AST::ExprAST> callFunction;    //调用函数
+        std::vector<std::unique_ptr<AST::ExprAST>> callArgs;
         llvm::Value* getStructElementPtr ();
     public:
         VariableExpr(const std::string &name) : name(name) {
@@ -22,7 +24,7 @@ namespace AST {
         VariableExpr(std::unique_ptr<AST::ExprAST> lv, std::unique_ptr<AST::ExprAST> index) : lv(std::move(lv)),
                                                                                               index(std::move(index)) {
         }
-
+        VariableExpr(std::unique_ptr<AST::ExprAST> function,std::vector<std::unique_ptr<AST::ExprAST>> args):callFunction(std::move(function)),callArgs(std::move(args)){}
         llvm::Value *getRealV();
         std::string GetName() { return name; }
 

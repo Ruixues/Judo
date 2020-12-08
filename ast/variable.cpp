@@ -7,6 +7,9 @@ namespace AST {
         if (!lv) {  //单纯的变量
             return module->GetNamedValue(name);
         }
+        if (callFunction) { //创建函数调用
+            return nullptr;
+        }
         if (structIndex) {  //是结构体索引
             return getStructElementPtr();
         }
@@ -42,7 +45,7 @@ namespace AST {
             return module->loger->GenCodeError("expect struct to access by '.'");
         }
         auto name = l->getType()->getStructName();
-        auto rclass = module->Type.getClass(name);
+        auto rclass = module->Type.getClass(std::string(name));
         if (!rclass) {
             return module->loger->GenCodeError("undefined class:" + std::string(name));
         }
@@ -63,10 +66,33 @@ namespace AST {
         if (got == -1) {
             return module->loger->GenCodeError("unexpected item:" + std::string(itemName) + " of class:" + std::string(name));
         }
-        std::cout << got << std::endl;
         return module->Builder.CreateStructGEP(lvar->getRealV(),got);
     }
     llvm::Value *VariableExpr::genCode() {
+        // If it is a function
+        if (!name.empty()) {
+            auto f = module->getFunction(name);
+            if (f != nullptr) {
+                return f;
+            }
+        }
+        if (callFunction) { //创建函数调用
+            auto f = callFunction->genCode();
+            if (!f) return nullptr;
+            if (!f->getType()->isFunctionTy()) {
+                return module->loger->GenCodeError("It must be a function to call");
+            }
+            //开始创建调用
+            std::vector<llvm::Value *> argVs;
+            for (auto &v:callArgs) {
+                auto tmp = v->genCode();
+                if (!tmp) {
+                    return nullptr;
+                }
+                argVs.push_back(tmp);
+            }
+            return module->Builder.CreateCall((llvm::Function*)f, argVs, "calltmp");
+        }
         if (!name.empty()) {
             auto tt = module->GetNamedValue(name);
             if (tt->getType()->getPointerElementType()->isArrayTy()) {

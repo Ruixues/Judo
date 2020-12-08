@@ -41,9 +41,9 @@ namespace AST {
                 module->ExitScope();
         );
         for (auto &arg:f->args()) {
-            llvm::Value *Alloca = module->CreateAlloca(f, arg.getName(), arg.getType());
+            llvm::Value *Alloca = module->CreateAlloca(f, std::string(arg.getName()), arg.getType());
             module->Builder.CreateStore(&arg, Alloca);   //储存参数到变量中
-            module->SetNamedValue(arg.getName(), Alloca);
+            module->SetNamedValue(std::string(arg.getName()), Alloca);
         }
         if (code->genCode()) {
             module->Builder.CreateRetVoid();

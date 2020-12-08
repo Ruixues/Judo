@@ -89,10 +89,22 @@ std::shared_ptr<RToken> RxReader::ReadAToken() {
     if (iswdigit(lastChar)) //如果是数字
     {                                          // Number: [0-9.]+
         std::string NumStr;
+        bool isDouble = false;
         do {
             NumStr += lastChar;
             lastChar = ReadChar(fstream);
+            if (lastChar == L'.') {  //小数喽
+                if (isDouble) {
+                    return nullptr;
+                }
+                isDouble = true;
+                NumStr += lastChar;
+                lastChar = ReadChar(fstream);
+            }
         } while (iswdigit(lastChar));
+        if (isDouble) {
+            return std::make_shared<RToken>(token_double, double(atof(NumStr.c_str())));
+        }
         return std::make_shared<RToken>(token_int, int64(atoll(NumStr.c_str())));
     }
     if (lastChar == WEOF)
