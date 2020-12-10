@@ -20,7 +20,6 @@
 #include "llvm/Support/DynamicLibrary.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Target/TargetMachine.h"
-
     class RJIT {
     public:
 
@@ -104,8 +103,8 @@
             // with and without "_" (for example "_itoa" but "sin").
             if (Name.length() > 2 && Name[0] == '_')
                 if (auto SymAddr =
-                        RTDyldMemoryManager::getSymbolAddressInProcess(Name.substr(1)))
-                    return JITSymbol(SymAddr, JITSymbolFlags::Exported);
+                        llvm::RTDyldMemoryManager::getSymbolAddressInProcess(Name.substr(1)))
+                    return llvm::JITSymbol(SymAddr, llvm::JITSymbolFlags::Exported);
 #endif
 
             return nullptr;
