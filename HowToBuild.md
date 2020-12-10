@@ -1,9 +1,10 @@
 # How To build?
 
-Environment Request:  
--   CMake
--   CXX Compiler (recommend Clang)
--   LLVM 10
+Environment Request:
+
+- CMake
+- CXX Compiler (recommend Clang)
+- LLVM 10
 
 First run
 
@@ -11,8 +12,7 @@ First run
 mkdir build && cd build
 ```
 
-Then call cmake to generate make files.
-We suggest you to use Ninja.
+Then call cmake to generate make files. We suggest you to use Ninja.
 
 ```
 cmake -G "Ninja" ../

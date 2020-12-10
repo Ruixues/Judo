@@ -31,9 +31,10 @@ namespace AST {
         //开始索引
         return module->Builder.CreateGEP(ll, rr);
     }
-    llvm::Value* VariableExpr::getStructElementPtr () {
+
+    llvm::Value *VariableExpr::getStructElementPtr() {
         //开始向类型系统请求类
-        auto lvar = dynamic_cast<AST::VariableExpr*> (lv.get());
+        auto lvar = dynamic_cast<AST::VariableExpr *> (lv.get());
         if (!lvar) {
             return module->loger->GenCodeError("expect struct to access by '.'");
         }
@@ -49,25 +50,27 @@ namespace AST {
         if (!rclass) {
             return module->loger->GenCodeError("undefined class:" + std::string(name));
         }
-        auto index = dynamic_cast<VariableExpr*>(structIndex.get());
+        auto index = dynamic_cast<VariableExpr *>(structIndex.get());
         if (!index) {
             return module->loger->GenCodeError("expect string to access the struct by '.'");
         }
         //开始获取这个段的位置
         auto itemName = index->GetName();
-        size_t i = 0,got = -1;
+        size_t i = 0, got = -1;
         for (auto &item:rclass->publics) {
             if (item->variable->GetName() == itemName) {
                 got = i;
-                break ;
+                break;
             }
-            ++ i;
+            ++i;
         }
         if (got == -1) {
-            return module->loger->GenCodeError("unexpected item:" + std::string(itemName) + " of class:" + std::string(name));
+            return module->loger->GenCodeError(
+                    "unexpected item:" + std::string(itemName) + " of class:" + std::string(name));
         }
-        return module->Builder.CreateStructGEP(lvar->getRealV(),got);
+        return module->Builder.CreateStructGEP(lvar->getRealV(), got);
     }
+
     llvm::Value *VariableExpr::genCode() {
         // If it is a function
         if (!name.empty()) {
@@ -91,7 +94,7 @@ namespace AST {
                 }
                 argVs.push_back(tmp);
             }
-            return module->Builder.CreateCall((llvm::Function*)f, argVs, "calltmp");
+            return module->Builder.CreateCall((llvm::Function *) f, argVs, "calltmp");
         }
         if (!name.empty()) {
             auto tt = module->GetNamedValue(name);
@@ -107,7 +110,7 @@ namespace AST {
         //生成一个变量
         llvm::Value *v;
         llvm::Value *initV;
-        llvm::Type* ttype;
+        llvm::Type *ttype;
         if (value) {
             initV = value->genCode();
             if (!initV) return nullptr;

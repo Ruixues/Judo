@@ -1,13 +1,17 @@
 #include "type.h"
 #include "core.h"
 #include "ast/class.h"
+
 JudoTypeSystem::JudoTypeSystem(Module *module) : module(module) {
 
 }
+
 JudoClassMateData::~JudoClassMateData() = default;
-JudoTypeRef::JudoTypeRef(Module* module,BuiltinType type) {
+
+JudoTypeRef::JudoTypeRef(Module *module, BuiltinType type) {
     pack = module->Type.GetBuiltInType(type);
 }
+
 bool JudoTypeSystem::BindType(std::string name, llvm::Type *type) {
     if (rlink.find(name) != rlink.end()) {
         return false;
@@ -51,18 +55,21 @@ llvm::Type *JudoTypeSystem::GetType(std::string name) {
     }
     return rlink[name];
 }
-llvm::Type* JudoTypeRef::ToType () {
+
+llvm::Type *JudoTypeRef::ToType() {
     if (pack) return pack;
     return module->Type.GetType(type);
 }
-bool JudoTypeSystem::BindClass (std::string name,std::unique_ptr<JudoClassMateData> data) {
+
+bool JudoTypeSystem::BindClass(std::string name, std::unique_ptr<JudoClassMateData> data) {
     if (rclass.find(name) != rclass.end()) {
         return false;
     }
-    rclass [name] = std::move (data);
+    rclass[name] = std::move(data);
     return true;
 }
-JudoClassMateData* JudoTypeSystem::getClass (std::string name) {
+
+JudoClassMateData *JudoTypeSystem::getClass(std::string name) {
     auto v = rclass.find(name);
     if (v == rclass.end()) return nullptr;
     return v->second.get();

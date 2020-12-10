@@ -4,6 +4,7 @@
 #include <string>
 #include "llvmInclude.h"
 #include <unordered_map>
+
 #define int32 int32_t
 #define int64 int64_t
 enum BuiltinType {
@@ -19,19 +20,25 @@ namespace AST {
 class JudoClassMateData {   //Core Data of judo class
 public:
     ~JudoClassMateData();
+
     std::vector<std::unique_ptr<AST::ClassItem>> privates, publics;
 };
+
 class Module;
+
 class JudoTypeRef { //对类型的指定
 private:
     std::string type;
-    Module* module;
-    llvm::Type* pack = nullptr;
+    Module *module;
+    llvm::Type *pack = nullptr;
 public:
-    JudoTypeRef(Module* module,std::string type):type(type),module (module) {}
-    JudoTypeRef(Module* module,BuiltinType type);
-    JudoTypeRef(Module* module,llvm::Type* type):pack (type) {}
-    llvm::Type* ToType ();
+    JudoTypeRef(Module *module, std::string type) : type(type), module(module) {}
+
+    JudoTypeRef(Module *module, BuiltinType type);
+
+    JudoTypeRef(Module *module, llvm::Type *type) : pack(type) {}
+
+    llvm::Type *ToType();
 };
 namespace AST {
     class ClassAST;
@@ -41,6 +48,7 @@ private:
     Module *module;
     std::unordered_map<std::string, llvm::Type *> rlink;
     std::unordered_map<std::string, std::unique_ptr<JudoClassMateData>> rclass;
+
     llvm::Type *getBuiltInType(std::string TypeName);
 
 public:
@@ -51,6 +59,8 @@ public:
     llvm::Type *GetBuiltInType(BuiltinType type);
 
     llvm::Type *GetType(std::string name);
-    JudoClassMateData* getClass (std::string name);
-    bool BindClass (std::string name,std::unique_ptr<JudoClassMateData> data);
+
+    JudoClassMateData *getClass(std::string name);
+
+    bool BindClass(std::string name, std::unique_ptr<JudoClassMateData> data);
 };

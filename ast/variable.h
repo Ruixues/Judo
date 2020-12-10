@@ -14,18 +14,25 @@ namespace AST {
         std::unique_ptr<AST::ExprAST> structIndex;  //索引
         std::unique_ptr<AST::ExprAST> callFunction;    //调用函数
         std::vector<std::unique_ptr<AST::ExprAST>> callArgs;
-        llvm::Value* getStructElementPtr ();
+
+        llvm::Value *getStructElementPtr();
+
     public:
         VariableExpr(const std::string &name) : name(name) {
         }
 
-        VariableExpr(std::unique_ptr<AST::ExprAST> l,std::unique_ptr<AST::ExprAST> structIndex,bool) : lv (std::move (l)),structIndex(std::move(structIndex)) {}
+        VariableExpr(std::unique_ptr<AST::ExprAST> l, std::unique_ptr<AST::ExprAST> structIndex, bool) : lv(
+                std::move(l)), structIndex(std::move(structIndex)) {}
 
         VariableExpr(std::unique_ptr<AST::ExprAST> lv, std::unique_ptr<AST::ExprAST> index) : lv(std::move(lv)),
                                                                                               index(std::move(index)) {
         }
-        VariableExpr(std::unique_ptr<AST::ExprAST> function,std::vector<std::unique_ptr<AST::ExprAST>> args):callFunction(std::move(function)),callArgs(std::move(args)){}
+
+        VariableExpr(std::unique_ptr<AST::ExprAST> function, std::vector<std::unique_ptr<AST::ExprAST>> args)
+                : callFunction(std::move(function)), callArgs(std::move(args)) {}
+
         llvm::Value *getRealV();
+
         std::string GetName() { return name; }
 
         llvm::Value *genCode();
@@ -39,7 +46,9 @@ namespace AST {
         std::vector<size_t> levelSize;  //每一维的大小，数组才需要提供
     public:
         std::unique_ptr<JudoTypeRef> type;
-        std::string GetName () {return name;}
+
+        std::string GetName() { return name; }
+
         VariableDefine(const std::string &name, std::unique_ptr<ExprAST> value, std::unique_ptr<JudoTypeRef> type,
                        std::vector<size_t> level, bool isGlobal) : name(name),
                                                                    value(std::move(

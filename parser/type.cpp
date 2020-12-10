@@ -8,7 +8,7 @@ namespace Parser {
         }
         auto t = module->nowToken;
         module->ReadAToken();  //吃掉类型
-        return std::make_unique<JudoTypeRef> (module,t->GetStr());
+        return std::make_unique<JudoTypeRef>(module, t->GetStr());
         //return module->Type.GetType(t->GetStr());
     }
 }

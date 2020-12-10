@@ -46,7 +46,7 @@ namespace Parser {
         if (!token->IsSign("(")) {  //无返回值
             //返回值是null
             return make_AST<AST::FunctionProto>(module, FunctionName, std::move(args),
-                                                std::make_unique<JudoTypeRef>(module,Type_void));
+                                                std::make_unique<JudoTypeRef>(module, Type_void));
         }
         //吃掉(
         module->ReadAToken();
@@ -96,7 +96,7 @@ namespace Parser {
                 }
                 module->ReadAToken();   //吃掉)
                 // 开始构建
-                return make_AST<AST::VariableExpr>(module,std::move(LHS),std::move(args));
+                return make_AST<AST::VariableExpr>(module, std::move(LHS), std::move(args));
             }
             // 获取操作符的右边第一个
             auto RHS = ParsePrimary(module);
@@ -117,7 +117,7 @@ namespace Parser {
                 LHS = make_AST<AST::VariableExpr>(module, std::move(LHS), std::move(RHS));
             } else {
                 if (BinOp == ".") {
-                    LHS = make_AST<AST::VariableExpr>(module,std::move (LHS), std::move(RHS),true);
+                    LHS = make_AST<AST::VariableExpr>(module, std::move(LHS), std::move(RHS), true);
                 } else {
                     LHS = make_AST<AST::BinaryExprAST>(module, BinOp, std::move(LHS),
                                                        std::move(RHS));
@@ -138,8 +138,8 @@ namespace Parser {
         std::string strName = module->nowToken->GetStr();
         //auto next = module->ReadAToken();
         //if (!next->IsSign("(")) {
-            //就是变量
-            return make_AST<AST::VariableExpr>(module, strName);
+        //就是变量
+        return make_AST<AST::VariableExpr>(module, strName);
         //}
         //否则就是函数调用
         module->ReadAToken();   //吃掉(

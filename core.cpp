@@ -14,7 +14,7 @@ void Module::Parse() {
         auto tmp = HandleToken(nowToken);
         if (!tmp) {
             std::cout << "Generate code error." << std::endl;
-            return ;
+            return;
         }
         tmp->genCode();
     }
