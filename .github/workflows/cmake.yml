@@ -44,9 +44,10 @@ jobs:
         # access regardless of the host operating system
         shell: bash
         working-directory: ${{runner.workspace}}/build
-        run:
+        run: |
           cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -G "Ninja"
-
+          wget http://ftp.us.debian.org/debian/pool/main/n/ncurses/libtinfo6_6.1+20181013-2+deb10u2_amd64.deb
+          dpkg -i libtinfo6_6.1+20181013-2+deb10u2_amd64.deb
       - name: Build
         working-directory: ${{runner.workspace}}/build
         shell: bash

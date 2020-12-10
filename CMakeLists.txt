@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 3.1)
 
 # 项目信息
 
-SET(CMAKE_C_COMPILER clang)
-SET(CMAKE_CXX_COMPILER clang++)
+#SET(CMAKE_C_COMPILER clang)
+#SET(CMAKE_CXX_COMPILER clang++)
 #option(LLVM_ENABLE_LLD ON)   #使用LLD作为链接器
 #SET(CMAKE_C_COMPILER gcc)
 #SET(CMAKE_CXX_COMPILER g++)
