@@ -1,11 +1,5 @@
-// Source : LLVM Official Code
 #pragma once
 
-#include <algorithm>
-#include <map>
-#include <memory>
-#include <string>
-#include <vector>
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/ADT/iterator_range.h"
 #include "llvm/ExecutionEngine/ExecutionEngine.h"
@@ -21,10 +15,15 @@
 #include "llvm/Support/DynamicLibrary.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Target/TargetMachine.h"
+#include <algorithm>
+#include <map>
+#include <memory>
+#include <string>
+#include <vector>
 
+typedef llvm::Module llvmModule;
 class RJIT {
 public:
-
     using ObjLayerT = llvm::orc::LegacyRTDyldObjectLinkingLayer;
     using CompileLayerT = llvm::orc::LegacyIRCompileLayer<ObjLayerT, llvm::orc::SimpleCompiler>;
 
