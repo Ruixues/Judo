@@ -82,7 +82,7 @@ namespace AST {
         if (callFunction) { //创建函数调用
             auto f = callFunction->genCode();
             if (!f) return nullptr;
-            if (!f->getType()->isFunctionTy()) {
+            if (!f->getType()->isFunctionTy() && !f->getType()->isPointerTy()) {
                 return module->loger->GenCodeError("It must be a function to call");
             }
             //开始创建调用

@@ -81,14 +81,13 @@ namespace Parser {
             // 已经确定了可以计算
             std::string BinOp = module->nowToken->GetSign();
             module->ReadAToken();
-            std::cout << "Here" << std::endl;
             if (BinOp == "(") { //特殊处理，因为有多个参数
                 std::vector<std::unique_ptr<AST::ExprAST>> args;
                 while (true) {
                     if (module->nowToken->IsSign(")")) {
                         break;
                     }
-                    auto tmp = ParseExpression(module);
+                    auto tmp = ParsePrimary(module);
                     if (!tmp) {
                         return tmp;
                     }
@@ -115,13 +114,11 @@ namespace Parser {
                 }
                 module->ReadAToken();   //吃掉]
                 LHS = make_AST<AST::VariableExpr>(module, std::move(LHS), std::move(RHS));
+            } else if (BinOp == ".") {
+                LHS = make_AST<AST::VariableExpr>(module, std::move(LHS), std::move(RHS), true);
             } else {
-                if (BinOp == ".") {
-                    LHS = make_AST<AST::VariableExpr>(module, std::move(LHS), std::move(RHS), true);
-                } else {
-                    LHS = make_AST<AST::BinaryExprAST>(module, BinOp, std::move(LHS),
-                                                       std::move(RHS));
-                }
+                LHS = make_AST<AST::BinaryExprAST>(module, BinOp, std::move(LHS),
+                                                   std::move(RHS));
             }
         }
     }
@@ -136,6 +133,7 @@ namespace Parser {
     std::unique_ptr<AST::ExprAST> ParseIdentifierExpr(Module *module) {
         //判断是函数调用还是啥
         std::string strName = module->nowToken->GetStr();
+        module->ReadAToken();
         //auto next = module->ReadAToken();
         //if (!next->IsSign("(")) {
         //就是变量
