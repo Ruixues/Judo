@@ -5,3 +5,5 @@
 ### 以下为文档目录:
 
 #### [关于Judo本身](aboutJudo.md)
+
+#### [语法更新消息](language.md)

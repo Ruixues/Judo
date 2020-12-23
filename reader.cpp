@@ -57,6 +57,9 @@ std::shared_ptr<RToken> RxReader::ReadAToken() {
         if (str == "class") {
             return std::make_shared<RToken>(token_class);
         }
+        if (str == "import") {
+            return std::make_shared<RToken>(token_import);
+        }
         return std::make_shared<RToken>(token_str, str);
     }
     /*
@@ -84,7 +87,6 @@ std::shared_ptr<RToken> RxReader::ReadAToken() {
             return nullptr;
         }
         return std::make_shared<RToken>(token_string, ret);
-
     }
     if (iswdigit(lastChar)) //如果是数字
     {                                          // Number: [0-9.]+
