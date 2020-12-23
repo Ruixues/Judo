@@ -19,7 +19,9 @@ private:
     std::wifstream file;
     std::unique_ptr<RxReader> reader;
     std::stack<std::vector<std::string>> ScopeVariables;  //记录当前作用域的变量
+    std::string filePath;
 public:
+    std::unique_ptr<llvm::Module> Compile ();
     std::stack<llvm::BasicBlock *> ForThenBlock;    //记录当前处于的for作用域的下一个块,帮助实现continue,for等东西
     std::stack<llvm::BasicBlock *> NowForBlock;  //当前循环体的判断体
     std::unique_ptr<Log> loger;
@@ -27,7 +29,7 @@ public:
     llvm::IRBuilder<> Builder;
     std::unique_ptr<llvm::Module> module;
     JudoTypeSystem Type;
-
+    std::unique_ptr<llvm::legacy::FunctionPassManager> FPM;
     llvm::Function *getFunction(std::string Name);
 
     std::map<std::string, llvm::GlobalVariable *> globalVariable;
@@ -71,9 +73,9 @@ private:
 public:
     llvm::LLVMContext context;
     std::unique_ptr<RJIT> JIT;
-    std::unique_ptr<llvm::legacy::FunctionPassManager> FPM;
-
     Judo(std::string EnterFile);
 
-    void InitializeModuleAndPassManager();
+    bool CallFunctionFromMainModule(std::string FunctionName);
+    bool RequireModule (std::string Module);    // 加载Module
+    std::unique_ptr<llvm::legacy::FunctionPassManager> InitializeModuleAndPassManager(llvm::Module* module);
 };

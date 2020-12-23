@@ -1,7 +1,6 @@
 #include "function.h"
 #include "../core.h"
 #include "../ast/binaryOpt.h"
-#include "../ast/FunctionCall.h"
 #include <memory>
 #include <vector>
 #include "../ast/variable.h"

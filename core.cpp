@@ -19,38 +19,26 @@ void Module::Parse() {
         tmp->genCode();
     }
     ExitScope();
-    module->print(llvm::errs(), nullptr);
-    auto main = getFunction("main");
-    if (main) {
-        //那就可以开始跑main函数了
-        auto H = core->JIT->addModule(std::move(module));
-        core->InitializeModuleAndPassManager();
-        auto mainSymbol = core->JIT->findSymbol("main");
-        if (mainSymbol) {
-            void (*FP)() = (void (*)()) (intptr_t) cantFail(mainSymbol.getAddress());
-            FP();
-        } else {
-            return;
-        }
-        core->JIT->removeModule(H);
-    }
 }
 
-Module::Module(std::string file, Judo *core) : Builder(core->context), core(core), Type(this) {
-    this->file.open(file, std::ios::in);
+Module::Module(std::string file, Judo *core) : Builder(core->context), core(core), Type(this), filePath(file) {
+
+}
+std::unique_ptr<llvm::Module> Module::Compile () {
+    this->file.open(filePath, std::ios::in);
     if (!this->file.good()) {
-        std::cout << "Open Module " << file << " Error" << std::endl;
-        return;
+        return nullptr;
     }
     this->file >> std::noskipws;
     reader = std::make_unique<RxReader>(&(this->file));
     loger = std::make_unique<Log>();
     opHandler = std::make_unique<OpHandler>(this);
-    module = std::make_unique<llvm::Module>(file, core->context);
-    llvm::ConstantFP::get(core->context, llvm::APFloat(1.0));
+    module = std::make_unique<llvm::Module>(this->filePath, core->context);
+    FPM = std::move(core->InitializeModuleAndPassManager(module.get()));
     BindAllBuiltIn(this);
+    Parse();
+    return std::move(module);
 }
-
 std::unique_ptr<AST::ExprAST> Module::HandleToken(std::shared_ptr<RToken> token) {
     switch (token->type) {
         case token_func: {
@@ -79,16 +67,24 @@ Judo::Judo(std::string EnterFile) {
         inited = true;
     }
     JIT = std::make_unique<RJIT>();
-    InitializeModuleAndPassManager();
     mainModule = new Module(EnterFile, this);
     modules[EnterFile] = std::shared_ptr<Module>(mainModule);
-    // 准备开始解析模块
-    mainModule->Parse();
+    auto mainModuleLLVM = mainModule->Compile();
+    if (!mainModuleLLVM) {
+        return;
+    }
+    JIT->addModule(std::move(mainModuleLLVM));
+    auto mainSymbol = JIT->findSymbol("main");
+    if (mainSymbol) {
+        void (*FP)() = (void (*)()) (intptr_t) cantFail(mainSymbol.getAddress());
+        FP();
+    } else {
+        return;
+    }
 }
 
-void Judo::InitializeModuleAndPassManager() {
-    auto module = std::make_unique<llvm::Module>("RJIT", context);
-    FPM = std::make_unique<llvm::legacy::FunctionPassManager>(module.get());
+std::unique_ptr<llvm::legacy::FunctionPassManager> Judo::InitializeModuleAndPassManager(llvm::Module* module) {
+    auto FPM = std::make_unique<llvm::legacy::FunctionPassManager>(module);
     module->setDataLayout(JIT->getTargetMachine().createDataLayout());
     FPM->add(llvm::createInstructionCombiningPass());
     FPM->add(llvm::createReassociatePass());
@@ -97,6 +93,7 @@ void Judo::InitializeModuleAndPassManager() {
     FPM->add(llvm::createInstructionCombiningPass());
     FPM->add(llvm::createReassociatePass());
     FPM->doInitialization();
+    return FPM;
 }
 
 llvm::Function *Module::getFunction(std::string Name) {
@@ -111,9 +108,6 @@ llvm::Function *Module::getFunction(std::string Name) {
 
 llvm::Value *Module::CreateAlloca(llvm::Function *Function,
                                   const std::string &Name, llvm::Type *type) {
-    if (!Function) {
-
-    }
     llvm::IRBuilder<> tmp(&Function->getEntryBlock(),
                           Function->getEntryBlock().begin());
     return tmp.CreateAlloca(type, 0, Name.c_str());
@@ -156,7 +150,22 @@ void Module::ExitScope() {
     }
     ScopeVariables.pop();
 }
+bool Judo::CallFunctionFromMainModule(std::string FunctionName) {
 
+    return true;
+}
 Module::~Module() {
 
+}
+bool Judo::RequireModule(std::string ModulePath) {
+    // 要求加载Module
+    if (modules.find(ModulePath) != modules.end()) {
+        return true;    //已经加载完成了
+    }
+    auto module = std::make_shared<Module>(ModulePath,this);
+    auto m = module->Compile();
+    if (!m) return false;
+    JIT->addModule(std::move(m));
+    modules [ModulePath] = module;
+    return true;
 }
