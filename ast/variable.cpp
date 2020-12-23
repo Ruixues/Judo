@@ -134,7 +134,8 @@ namespace AST {
             auto var = module->globalVariable[name];
             var->setAlignment(llvm::MaybeAlign(4));
             module->SetNamedValue(name, var);
-            return module->Builder.CreateLoad(var, name);
+            //return module->Builder.CreateLoad(var, name);
+            return llvm::ConstantFP::get(module->core->context, llvm::APFloat(1.0));;
         } else {
             v = module->CreateAlloca(module->Builder.GetInsertBlock()->getParent(), name, ttype);
             if (value) {

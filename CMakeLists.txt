@@ -8,6 +8,8 @@ cmake_minimum_required(VERSION 3.1)
 #option(LLVM_ENABLE_LLD ON)   #使用LLD作为链接器
 #SET(CMAKE_C_COMPILER gcc)
 #SET(CMAKE_CXX_COMPILER g++)
+
+SET(CMAKE_BUILD_TYPE "Debug")
 project(Judo)
 set(CMAKE_VERBOSE_MAKEFILE on)
 set(CMAKE_CXX_STANDARD 20)
