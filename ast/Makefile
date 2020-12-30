@@ -1,0 +1,13 @@
+obj-y += const/
+obj-y += ast.o
+obj-y += binaryOpt.o
+obj-y += break.o
+obj-y += class.o
+obj-y += codeBlock.o
+obj-y += for.o
+obj-y += function.o
+obj-y += FunctionCall.o
+obj-y += if.o
+obj-y += import.o
+obj-y += return.o
+obj-y += variable.o

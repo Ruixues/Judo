@@ -1,0 +1,13 @@
+obj-y += const/
+obj-y += break.o
+obj-y += class.o
+obj-y += codeBlock.o
+obj-y += extern.o
+obj-y += for.o
+obj-y += if.o
+obj-y += function.o
+obj-y += import.o
+obj-y += paren.o
+obj-y += return.o
+obj-y += type.o
+obj-y += variable.o
