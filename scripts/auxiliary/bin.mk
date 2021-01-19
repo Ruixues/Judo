@@ -21,8 +21,6 @@ endif
 # Start build                          #
 ########################################
 
-# Create executable from a single .c file
-# host-csingle -> Executable
 quiet_cmd_build_bin = $(ECHO_BIN)  $@
       cmd_build_bin	= $(OBJCOPY) $(bin_flags) $(bin-objs) $@ 
 $(bin): $(bin-objs) FORCE

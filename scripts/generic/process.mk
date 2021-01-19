@@ -61,9 +61,8 @@ $(obj)/%.o: $(src)/%.S FORCE
 
 # Linker scripts preprocessor (.lds.S -> .lds)
 # ---------------------------------------------------------------------------
-quiet_cmd_cpp_lds_S = LDS $@
-      cmd_cpp_lds_S = $(CPP) $(cpp_flags) -P -C -U$(ARCH) \
-	                     -D__ASSEMBLY__ -DLINKER_SCRIPT -o $@ $<
+quiet_cmd_cpp_lds_S = $(ECHO_LDS) $@
+      cmd_cpp_lds_S = $(CPP) $(cpp_flags) -P -o $@ $<
 
 $(obj)/%.lds: $(src)/%.lds.S FORCE
 	$(call if_changed_dep,cpp_lds_S) 

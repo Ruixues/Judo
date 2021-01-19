@@ -7,11 +7,17 @@
 # System start                         #
 ########################################
 
-all: #build
+start:
 
 ########################################
 # Start path                           #
 ########################################
+
+#
+# Real home
+ifndef home
+home 		:= $(CURDIR)
+endif
 
 #
 # Project home
@@ -31,7 +37,7 @@ ifndef Kconfig
 Kconfig := $(MAKE_HOME)/Kconfig
 endif
 
-export MAKE_HOME BUILD_HOME objtree Kconfig
+export home MAKE_HOME BUILD_HOME objtree Kconfig
 
 ########################################
 # Start env                            #
@@ -66,14 +72,28 @@ ifeq ($(DEBUG_MODE),1)
 endif
 export quiet Q
 
+ifeq ("$(origin W)", "command line")
+  export BUILD_ENABLE_EXTRA_GCC_CHECKS := $(W)
+endif
+
+ifeq ("$(origin G)", "command line")
+  export BUILD_ENABLE_EXTRA_GCC_DEBUG := $(G)
+endif
+
 # OK, Make called in directory where kernel src resides
 # Do we want to locate output files in a separate directory?
 ifeq ("$(origin O)", "command line")
-  KBUILD_OUTPUT := $(O)
+export BUILD_OUTPUT := $(addprefix $(MAKE_HOME)/,$(O))
 endif
 
-ifeq ("$(origin W)", "command line")
-  export BUILD_ENABLE_EXTRA_GCC_CHECKS := $(W)
+ifeq ($(BUILD_OUTPUT),)
+start: all
+endif
+ifneq ($(BUILD_OUTPUT),)
+$(filter-out start , $(MAKECMDGOALS)) start:
+	$(Q)$(MKDIR) $(BUILD_OUTPUT)
+	$(Q)$(MAKE) -C $(BUILD_OUTPUT) $(chdir) \
+	fun=$(MAKECMDGOALS)
 endif
 
 #
@@ -88,6 +108,7 @@ include $(BUILD_HOME)/include/warn.mk
 # Tool Define  
 include $(BUILD_HOME)/include/define.mk
 
+ifeq ($(BUILD_OUTPUT),)
 ########################################
 # Start config                         #
 ########################################
@@ -117,6 +138,18 @@ menuconfig: FORCE
 	$(Q)$(MAKE) $(build_host)=$(BUILD_HOME)/kconfig syncconfig
 
 ########################################
+# Start submake                        #
+########################################
+
+PHONY += $(submake_fun) submake
+
+submake_fun += remake build env clean mrproper distclean checkstack coccicheck help
+
+$(submake_fun): submake
+submake: FORCE 
+	$(Q)$(MAKE) $(submake)=$(MAKE_HOME) $(if $(MAKECMDGOALS),_$(MAKECMDGOALS))
+
+########################################
 # clean tools                          #
 ########################################
 
@@ -130,65 +163,7 @@ cleantools:
 version:
 	$(Q)$(ECHO) $(LIGHYBUILD_VERSION)
 
-########################################
-# Start help                           #
-########################################
-
-PHONY += help
-help:
-	$(Q)$(ECHO)  'System version:'
-	$(Q)$(ECHO)  '  Build-Version  = $(LIGHYBUILD_VERSION)'
-	$(Q)$(ECHO)  '  CC             = $(CC)             '
-	$(Q)$(ECHO)  '  CC-Version     = $(call cc-version)'
-	$(Q)$(ECHO)  ''
-	$(Q)$(ECHO)  'Auto targets:'
-	$(Q)$(ECHO)  '  remake		 - The code is automatically cleared and built'
-	$(Q)$(ECHO)  ''
-	$(Q)$(ECHO)  'Build targets:'
-	$(Q)$(ECHO)  '  build		 - Build all necessary images depending on configuration'
-	$(Q)$(ECHO)  ''
-	$(Q)$(ECHO)  'Old Configuration targets:'
-	$(Q)$(MAKE)   -f $(MAKE_HOME)/scripts/kconfig/Makefile help
-	$(Q)$(ECHO)  ''
-	$(Q)$(ECHO)  'Configuration targets:'
-	$(Q)$(MAKE)   -f $(MAKE_HOME)/scripts/newconfig/Makefile help
-	$(Q)$(ECHO)  ''
-	$(Q)$(ECHO)  'Other generic targets:'
-	$(Q)$(ECHO)  '  info		  - Build targets informatio'
-	$(Q)$(ECHO)  ''
-	$(Q)$(ECHO)  'Cleaning project:'
-	$(Q)$(ECHO)  '  clean		  - Only use rules to clean targets'
-	$(Q)$(ECHO)  '  mrproper	  - Remove all generated files + config + various backup files'
-	$(Q)$(ECHO)  '  distclean	  - mrproper + remove editor backup and patch files'
-	$(Q)$(ECHO)  '  cleantools	  - Remove buildsystem tools generated files'
-	$(Q)$(ECHO)  ''
-	$(Q)$(ECHO)  'Static analysers'
-	$(Q)$(ECHO)  '  checkstack      - Generate a list of stack hogs'
-	$(Q)$(ECHO)  '  coccicheck      - Execute static code analysis with Coccinelle'
-	$(Q)$(ECHO)  ''
-	$(Q)$(ECHO)  '  make V=0|1 [targets] 0 => quiet build (default), 1 => verbose build'
-	$(Q)$(ECHO)  '  make V=2   [targets] 2 => give reason for rebuild of target'
-	$(Q)$(ECHO)  '  make O=dir [targets] Locate all output files in "dir", including .config'
-	$(Q)$(ECHO)  '  make C=1   [targets] Check all c source with $$CHECK (sparse by default)'
-	$(Q)$(ECHO)  '  make C=2   [targets] Force check of all c source with $$CHECK'
-	$(Q)$(ECHO)  '  make RECORDMCOUNT_WARN=1 [targets] Warn about ignored mcount sections'
-	$(Q)$(ECHO)  '  make W=n   [targets] Enable extra gcc checks, n=1,2,3 where'
-	$(Q)$(ECHO)  '		1: warnings which may be relevant and do not occur too often'
-	$(Q)$(ECHO)  '		2: warnings which occur quite often but may still be relevant'
-	$(Q)$(ECHO)  '		3: more obscure warnings, can most likely be ignored'
-	$(Q)$(ECHO)  '		Multiple levels can be combined with W=12 or W=123'
-
-########################################
-# Start submake                        #
-########################################
-
-PHONY += $(submake_fun) submake
-
-submake_fun += remake build env clean mrproper distclean checkstack coccicheck
-
-$(submake_fun): submake
-submake: FORCE 
-	$(Q)$(MAKE) $(submake)=$(MAKE_HOME) $(if $(MAKECMDGOALS),_$(MAKECMDGOALS))
+endif #BUILD_OUTPUT
 
 ########################################
 # Start FORCE                          #

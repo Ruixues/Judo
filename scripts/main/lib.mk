@@ -90,7 +90,7 @@ _build: $(always-y) $(subdir-y)
 
 PHONY += $(subdir-y)
 $(subdir-y):
-	$(Q)$(MAKE) $(build)=$@
+	$(Q)$(MAKE) $(build_lib)=$@
 
 ########################################
 # Start FORCE                          #

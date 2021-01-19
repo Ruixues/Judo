@@ -4,7 +4,7 @@
 # The Makefile also allow for more convinient build of external modules
 
 # Usage
-# $1 - Kernel src directory
+# $1 - Src directory
 # $2 - Output directory
 # $3 - version
 # $4 - patchlevel

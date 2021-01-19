@@ -31,7 +31,7 @@ include-file	:= $(filter %/, $(include-file))
 include-file	:= $(patsubst %/,%,$(include-file))
 include-file	:= $(addprefix $(obj)/,$(include-file))
 
-INCLUDE			:= $(include-file) $(INCLUDE)
+INCLUDE			:= $(include-file) $(include-direct-y) $(INCLUDE)
 export INCLUDE
 
 ########################################
@@ -147,7 +147,11 @@ rule_host:
 # Start build                          #
 ########################################
 
-_build: $(rules)
+ifeq ($(rules),)
+rules += rule_main
+endif
+
+_build: $(rules) 
 
 ########################################
 # Descending build                     #

@@ -7,18 +7,20 @@
 # Build toolchain                      #
 ########################################
 
+CROSS_COMPILE	?= 
+
 #
 # Gcc toolchain
-AS			?= $(CROSS_COMPILE)gcc
-LD			?= $(CROSS_COMPILE)ld
-CC			?= $(CROSS_COMPILE)gcc
-CPP			?= $(CROSS_COMPILE)cpp
-CXX			?= $(CROSS_COMPILE)c++
-AR			?= $(CROSS_COMPILE)ar
-NM			?= $(CROSS_COMPILE)nm
-STRIP		?= $(CROSS_COMPILE)strip
-OBJCOPY		?= $(CROSS_COMPILE)objcopy
-OBJDUMP		?= $(CROSS_COMPILE)objdump
+AS				?= $(CROSS_COMPILE)gcc
+LD				?= $(CROSS_COMPILE)ld
+CC				?= $(CROSS_COMPILE)gcc
+CPP				?= $(CROSS_COMPILE)cpp
+CXX				?= $(CROSS_COMPILE)c++
+AR				?= $(CROSS_COMPILE)ar
+NM				?= $(CROSS_COMPILE)nm
+STRIP			?= $(CROSS_COMPILE)strip
+OBJCOPY			?= $(CROSS_COMPILE)objcopy
+OBJDUMP			?= $(CROSS_COMPILE)objdump
 
 #
 # NASM toolchain
@@ -68,10 +70,11 @@ MKDIR			:= mkdir -p
 CP				:= cp -af
 RM				:= rm
 RMDIR			:= rm -r
+LN				:= ln -fsn
 CD				:= cd
 MV				:= mv
 FIND			:= find
-ECHO			:= echo -e
+ECHO			:= echo -e " "
 PERL			:= perl
 CONFIG_SHELL	:= $(shell if [ -x "$$BASH" ]; then echo $$BASH; \
 	  else if [ -x /bin/bash ]; then echo /bin/bash; \
@@ -108,6 +111,7 @@ ECHO_CXX		:= \e[32mCXX\e[0m
 ECHO_AS			:= \e[32mAS\e[0m
 ECHO_AR			:= \e[32mAR\e[0m
 ECHO_LD			:= \e[35mLD\e[0m
+ECHO_LDS		:= \e[35mLDS\e[0m
 
 ECHO_CUSTCPP	:= \e[33mCUSTCPP\e[0m
 ECHO_CUSTAS		:= \e[33mCUSTAS\e[0m
@@ -139,9 +143,19 @@ ECHO_CHECK		:= \e[5m\e[33mCHECK\e[0m
 # Build tool define                    #
 ########################################
 
+# Shorthand for $(Q)$(MAKE) -f scripts/chdir.mk dir=
+# Usage:
+# $(Q)$(MAKE) $(chdir)=dir
+top			:= -f $(MAKE_HOME)/Makefile
+
+# Shorthand for $(Q)$(MAKE) -f scripts/chdir.mk dir=
+# Usage:
+# $(Q)$(MAKE) $(chdir)=dir
+chdir		:= -f $(BUILD_HOME)/chdir.mk
+
 # Shorthand for $(Q)$(MAKE) -f scripts/submake.mk obj=
 # Usage:
-# $(Q)$(MAKE) $(build)=dir
+# $(Q)$(MAKE) $(submake)=dir
 submake		:= -f $(BUILD_HOME)/submake.mk obj
 
 # Shorthand for $(Q)$(MAKE) -f scripts/submake.mk obj=
@@ -151,7 +165,7 @@ SUBMAKE		:= $(Q)$(MAKE) $(submake)
 
 # Shorthand for $(Q)$(MAKE) -f scripts/env.mk obj=
 # Usage:
-# $(Q)$(MAKE) $(build)=dir
+# $(Q)$(MAKE) $(env)=dir
 env			:= -f $(BUILD_HOME)/env.mk obj
 
 # Shorthand for $(Q)$(MAKE) -f scripts/build.mk obj=
@@ -195,6 +209,12 @@ clean		:= -f $(BUILD_HOME)/clean.mk obj
 # Usage:
 # $(Q)$(MAKE) $(clean)=dir
 basic		:= -f $(BUILD_HOME)/basic/fixdep.mk
+
+###
+# Shorthand for $(Q)$(MAKE) scripts/tools/mkmakefile
+# Usage:
+# $(Q)$(CONFIG_SHELL) $(mkmakefile)
+mkmakefile	:=  $(BUILD_HOME)/tools/mkmakefile
 
 ########################################
 # Build option                         #

@@ -11,8 +11,8 @@
 # ... is a shorthand for
 # bin += foo
 # always-y  += foo
-bin 		+= $(bin-always-y)
-bin-always 	+= $(bin-always-y)
+bin 				+= $(bin-always-y)
+bin-always 			+= $(bin-always-y)
 
 ########################################
 # Sort files                           #

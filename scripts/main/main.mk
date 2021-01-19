@@ -31,32 +31,41 @@ include $(BUILD_HOME)/main/main_rule.mk
 
 include_file := $(addprefix -I ,$(INCLUDE))
 
-ifeq (asflags-y,)
+ifeq ($(asflags-y),)
 asflags-y	:= $(asflags-sub-y)
 endif
 
-ifeq (ccflags-y,)
+ifeq ($(ccflags-y),)
 ccflags-y	:= $(ccflags-sub-y)
 endif
 
-ifeq (cppflags-y,)
+ifeq ($(cppflags-y),)
 cppflags-y	:= $(cppflags-sub-y)
 endif
 
-ifeq (ldflags-y,)
+ifeq ($(acflags-y),)
+acflags-y	:= $(acflags-sub-y)
+endif
+
+ifeq ($(ldflags-y),)
 ldflags-y	:= $(ldflags-sub-y)
 endif
 
-export asflags-sub-y ccflags-sub-y cppflags-sub-y asflags-sub-y ldflags-sub-y
+export asflags-sub-y ccflags-sub-y cppflags-sub-y acflags-sub-y ldflags-sub-y
 
+ifeq ($(BUILD_ENABLE_EXTRA_GCC_DEBUG),1)
+asflags-y	+= -g
+ccflags-y	+= -g
+cxxflags-y	+= -g
+endif
 
-a_flags		= -Wp,-MD,$(depfile) $(include_file) $(gcc-warning) $(asflags-y) $(acflags-y) 
+a_flags		= $(asflags-y) $(acflags-y) $(gcc-warning) -Wp,-MD,$(depfile) $(include_file)
 
-c_flags		= -Wp,-MD,$(depfile) $(include_file) $(gcc-warning) $(ccflags-y) $(acflags-y) 
+c_flags		= $(ccflags-y) $(acflags-y) $(gcc-warning) -Wp,-MD,$(depfile) $(include_file)
 
-cxx_flags	= -Wp,-MD,$(depfile) $(include_file) $(gcc-warning) $(cxxflags-y)
+cxx_flags	= $(cxxflags-y) $(gcc-warning) -Wp,-MD,$(depfile) $(include_file) 
 
-cpp_flags	= -Wp,-MD,$(depfile) $(include_file) $(gcc-warning) $(cppflags-y)
+cpp_flags	= $(cppflags-y) $(gcc-warning) -Wp,-MD,$(depfile) $(include_file)
 
 ld_flags	= $(LDFLAGS) $(ldflags-y)
 
@@ -79,7 +88,7 @@ $(obj-subfile):$(subdir-y)
 quiet_cmd_link_o_target = $(ECHO_LD) $@
 	  cmd_link_o_target = $(if $(strip $(obj-file) $(obj-subfile) $(subdir-y)),\
 		      $(LD) $(ld_flags) -r -o $@ $(obj-file) $(obj-subfile), \
-		      rm -f $@; $(AR) rcs$(KBUILD_ARFLAGS) $@)
+		      rm -f $@; $(AR) cDPrST $@)
 $(builtin-target): $(obj-file) $(obj-subfile) FORCE
 	$(call if_changed,link_o_target)
 
@@ -87,7 +96,7 @@ $(builtin-target): $(obj-file) $(obj-subfile) FORCE
 # Start build                          #
 ########################################
 
-_build:  $(subdir-y) $(always-y)
+_build: $(subdir-y) $(always-y)
 
 ########################################
 # Descending build                     #
@@ -95,7 +104,7 @@ _build:  $(subdir-y) $(always-y)
 
 PHONY += $(subdir-y)
 $(subdir-y):
-	$(Q)$(MAKE) $(build)=$@
+	$(Q)$(MAKE) $(build_main)=$@
 
 ########################################
 # Start FORCE                          #
