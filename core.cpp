@@ -54,8 +54,9 @@ std::unique_ptr<AST::ExprAST> Module::HandleToken(std::shared_ptr<RToken> token)
             return Parser::ParseImport(this);
         case token_class:
             return Parser::ParseClass(this);
+        default:
+            return loger->ParseError("Core", "unexpected token type:" + std::to_string(token->type));
     }
-    return loger->ParseError("Core", "unexpected token type:" + std::to_string(token->type));
 }
 
 Judo::Judo(std::string EnterFile) {
@@ -73,6 +74,7 @@ Judo::Judo(std::string EnterFile) {
     if (!mainModuleLLVM) {
         return;
     }
+    //mainModuleLLVM->print(llvm::errs(), nullptr);
     JIT->addModule(std::move(mainModuleLLVM));
     auto mainSymbol = JIT->findSymbol("main");
     if (mainSymbol) {
@@ -89,7 +91,6 @@ std::unique_ptr<llvm::legacy::FunctionPassManager> Judo::InitializeModuleAndPass
     FPM->add(llvm::createInstructionCombiningPass());
     FPM->add(llvm::createReassociatePass());
     FPM->add(llvm::createGVNPass());
-    //FPM->add(llvm::createCFGSimplificationPass());
     FPM->add(llvm::createInstructionCombiningPass());
     FPM->add(llvm::createReassociatePass());
     FPM->doInitialization();
@@ -151,7 +152,6 @@ void Module::ExitScope() {
     ScopeVariables.pop();
 }
 bool Judo::CallFunctionFromMainModule(std::string FunctionName) {
-
     return true;
 }
 Module::~Module() {

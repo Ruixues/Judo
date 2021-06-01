@@ -72,9 +72,9 @@ namespace AST {
     }
 
     llvm::Value *VariableExpr::genCode() {
-        // If it is a function
         if (!name.empty()) {
             auto f = module->getFunction(name);
+            // If it is a function
             if (f != nullptr) {
                 return f;
             }

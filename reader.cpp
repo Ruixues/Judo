@@ -1,6 +1,7 @@
 #include "reader.h"
+#include <cstdio>
+#include <cwchar>
 #include <iostream>
-
 
 static wchar_t ReadChar(std::wifstream *file) {
     wchar_t ret;
@@ -8,6 +9,7 @@ static wchar_t ReadChar(std::wifstream *file) {
     if (file->eof()) {
         return WEOF;
     }
+    putwchar(ret);
     return ret;
 }
 

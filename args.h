@@ -31,10 +31,11 @@ void HandleInput(int argc, char *argv[]) {
     std::string input = program.get<std::string>("-i");
     if (input != "") {
         //开始加载
+        std::cout << "Start to run" << std::endl;
         RunJudoProgram(input);
     }
 }
 
-void RunJudoProgram(std::string in) {
+inline void RunJudoProgram(std::string in) {
     auto Engine = std::make_shared<Judo>(in);
 }

@@ -48,7 +48,7 @@ namespace AST {
         if (code->genCode()) {
             module->Builder.CreateRetVoid();
             llvm::verifyFunction(*f);
-            //module->core->FPM->run(*f);
+            module->FPM->run(*f);
             return f;
         }
         //开始根据参数设置

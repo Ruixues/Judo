@@ -20,9 +20,10 @@ namespace Parser {
             }
             codes.push_back(std::move(tmp));
         }
-        if (module->nowToken && module->nowToken->IsSign("}")) {
-            module->ReadAToken();   //吃掉}
+        if (!module->nowToken->IsSign("}")) {
+            return module->loger->ParseError("Code Block", "expect } for code block.");
         }
+        module->ReadAToken();   //吃掉}
         return make_AST<AST::CodeBlockAST>(module, std::move(codes));
     }
 }

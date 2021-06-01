@@ -4,6 +4,6 @@
 
 class Module;
 
-void BindAllBuiltIn(Module *module) {
+inline void BindAllBuiltIn(Module *module) {
     bindAdd(module);
 }
