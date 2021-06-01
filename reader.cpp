@@ -9,7 +9,7 @@ static wchar_t ReadChar(std::wifstream *file) {
     if (file->eof()) {
         return WEOF;
     }
-    putwchar(ret);
+    //putwchar(ret);
     return ret;
 }
 
