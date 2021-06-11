@@ -3,7 +3,15 @@
 
 最高优先级项目为: 使类支持成员函数
 
+```
+class T {
+    var t:int64   
+}
 
+func (z T)FuncName() {
+    
+}
+```
 
 添加Module系统。
 

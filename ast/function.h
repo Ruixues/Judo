@@ -38,11 +38,17 @@ namespace AST {
     private:
         std::unique_ptr<FunctionProto> proto;
         std::unique_ptr<ExprAST> code; //函数内容
+        std::string belongClass;
+        std::string variableName;
+        bool isClass;
     public:
         FunctionAST(std::unique_ptr<FunctionProto> proto, std::unique_ptr<ExprAST> code) : proto(std::move(proto)),
-                                                                                           code(std::move(code)) {
+                                                                                           code(std::move(code)),isClass(false) {
 
         }
+        FunctionAST(std::string variableName,std::string belongClass,std::unique_ptr<FunctionProto> proto, std::unique_ptr<ExprAST> code) : proto(std::move(proto)),
+                                                                                           code(std::move(code)),belongClass(belongClass),variableName(variableName),isClass(true) {
+                                                                                           }
 
         llvm::Value *genCode();
     };

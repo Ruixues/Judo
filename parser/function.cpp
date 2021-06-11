@@ -256,6 +256,27 @@ namespace Parser
     {
         module->ReadAToken(); //吃掉 func 标识符
         //开始解析函数的定义
+        bool isClass = false;
+        std::shared_ptr<RToken> customName,typeName;
+        if(module->nowToken->IsSign("(")) { // class member function
+            isClass = true;
+            module->ReadAToken();
+            customName = module->ReadAToken();
+            if (customName->type != token_str) {
+                module->loger->ParseError("ParseFunction","The name of function must be str");
+                return nullptr;
+            }
+            typeName = module->ReadAToken();
+            if (typeName->type != token_str) {
+                module->loger->ParseError("ParseFunction", "There must be the name of type after variable");
+                return nullptr;
+            }
+            module->ReadAToken();
+            if (!module->nowToken->IsSign(")")) {
+                module->loger->ParseError("ParseFunction", "miss )");
+                return nullptr;
+            }
+        }
         auto proto = ParseFunctionProto(module);
         if (!proto)
             return nullptr;
@@ -264,6 +285,9 @@ namespace Parser
         if (!inside)
         {
             return nullptr;
+        }
+        if (isClass) {
+            return make_AST<AST::FunctionAST>(module,customName,typeName,std::move(proto),std::move(inside));
         }
         return make_AST<AST::FunctionAST>(module, std::move(proto), std::move(inside));
     }
