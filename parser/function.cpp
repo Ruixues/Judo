@@ -150,7 +150,6 @@ namespace Parser
                         }
                         if (!module->nowToken->IsSign(","))
                         {
-                            std::cout << module->nowToken->GetSign() << std::endl;
                             return module->loger->ParseError("Function Call", "Expected ')' or ',' in argument list");
                         }
                         module->ReadAToken(); //吃掉分隔符","
@@ -261,7 +260,7 @@ namespace Parser
         if(module->nowToken->IsSign("(")) { // class member function
             isClass = true;
             module->ReadAToken();
-            customName = module->ReadAToken();
+            customName = module->nowToken;
             if (customName->type != token_str) {
                 module->loger->ParseError("ParseFunction","The name of function must be str");
                 return nullptr;
@@ -276,6 +275,7 @@ namespace Parser
                 module->loger->ParseError("ParseFunction", "miss )");
                 return nullptr;
             }
+            module->ReadAToken();   //eat )
         }
         auto proto = ParseFunctionProto(module);
         if (!proto)
@@ -287,7 +287,9 @@ namespace Parser
             return nullptr;
         }
         if (isClass) {
-            return make_AST<AST::FunctionAST>(module,customName,typeName,std::move(proto),std::move(inside));
+            proto->args.insert(proto->args.begin(),std::make_unique<AST::FunctionArg>(module->Type.GetType(typeName->GetStr()), customName->GetStr()));
+            proto->name = "_JudoClass" + typeName->GetStr() + "Function" + proto->name;
+            return make_AST<AST::FunctionAST>(module,customName->GetStr(),typeName->GetStr(),std::move(proto),std::move(inside));
         }
         return make_AST<AST::FunctionAST>(module, std::move(proto), std::move(inside));
     }

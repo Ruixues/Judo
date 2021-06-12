@@ -21,12 +21,11 @@ namespace AST {
         std::string name;
         std::vector<std::unique_ptr<FunctionArg>> args;
         std::unique_ptr<JudoTypeRef> returnType;
-
+        bool isClass = false;
         FunctionProto(std::string name, std::vector<std::unique_ptr<FunctionArg>> args,
                       std::unique_ptr<JudoTypeRef> returnType) : name(name), args(std::move(args)),
                                                                  returnType(std::move(returnType)) {
         }
-
         llvm::Value *genCode() {
             return nullptr;
         }

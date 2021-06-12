@@ -1,5 +1,7 @@
 #include "variable.h"
 #include "../core.h"
+#include "AST.h"
+#include "FunctionCall.h"
 #include "class.h"
 
 namespace AST {
@@ -52,6 +54,11 @@ namespace AST {
         }
         auto index = dynamic_cast<VariableExpr *>(structIndex.get());
         if (!index) {
+            auto f = dynamic_cast<FunctionCall *>(structIndex.get());
+            if (f) { //deal with member function
+                f->args.insert(f->args.begin(),make_AST<IRWrapper>(module,l));
+                //return;
+            }
             return module->loger->GenCodeError("expect string to access the struct by '.'");
         }
         //开始获取这个段的位置
@@ -65,6 +72,8 @@ namespace AST {
             ++i;
         }
         if (got == -1) {
+            // May be a function
+            
             return module->loger->GenCodeError(
                     "unexpected item:" + std::string(itemName) + " of class:" + std::string(name));
         }

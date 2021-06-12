@@ -30,6 +30,9 @@ llvm::Type *JudoTypeSystem::GetBuiltInType(BuiltinType t) {
         case Type_int64: {
             return llvm::Type::getInt64Ty(context);
         }
+        case Type_Undefined: {
+            return nullptr;
+        }
     }
     return nullptr;
 }

@@ -1,7 +1,6 @@
 #include "function.h"
 #include "../core.h"
 #include "../other/defer.h"
-#include "llvm/Analysis/DominanceFrontier.h"
 
 namespace AST {
     llvm::Function *FunctionProto::genFunction() {

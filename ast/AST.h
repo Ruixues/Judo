@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../llvmInclude.h"
+#include <llvm/IR/Value.h>
 #include <memory>
 #include <vector>
 #include <utility>
@@ -16,6 +17,14 @@ namespace AST {
         void SetModule(Module *module);
 
         virtual llvm::Value *genCode() = 0; //生成LLVM IR
+    };
+    class IRWrapper:public ExprAST{
+    public:
+        llvm::Value* value;
+        llvm::Value* genCode() {
+            return value;
+        }
+        IRWrapper(llvm::Value* value):value(value){}
     };
 } // namespace AST
 

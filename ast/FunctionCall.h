@@ -7,10 +7,9 @@
 
 namespace AST {
     class FunctionCall : public ExprAST {
-    private:
+    public:
         std::string functionName;
         std::vector<std::unique_ptr<ExprAST>> args;
-    public:
         FunctionCall(std::string functionName, std::vector<std::unique_ptr<ExprAST>> args) : functionName(functionName),
                                                                                              args(std::move(args)) {
 
